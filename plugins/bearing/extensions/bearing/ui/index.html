@@ -1,0 +1,33 @@
+<!doctype html>
+<!--
+THESIS: The repository explained as a reading path that the developer can act on. Each fact can open a deeper chat with Copilot. It does not use a dashboard of cards.
+OWN-WORLD: The Copilot app's own theme tokens. Neutral surfaces, one accent for selection and links, green and red only for status and diffs. Rows with dividers, not cards. Monospace only for paths, commands, and code.
+STORY: A new developer learns what the project is, where things are, how it works, the rules, how to run it, and what changed recently. Then the developer does the first steps.
+FIRST VIEWPORT: Repository identity and build status at the top, section tabs below, then the welcome text and the ordered "Start here" files with Ask actions. The question box stays at the bottom.
+FORM: Tabbed guide in the app side panel. Inherited world; the plan fixed the structure, so there was no concept round.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="bearing-token" content="{{TOKEN}}">
+<title>Onboarding guide</title>
+<link rel="stylesheet" href="/app.css">
+<script type="module" src="/app.js"></script>
+</head>
+<body>
+<div class="app">
+  <header class="masthead" id="masthead">
+    <p class="muted">Loading the onboarding guide…</p>
+  </header>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Guide sections"></nav>
+  <main class="content" id="content" tabindex="-1"></main>
+  <form class="askbar" id="askbar" autocomplete="off">
+    <label class="sr-only" for="ask-input">Ask Copilot about this repository</label>
+    <input id="ask-input" type="text" maxlength="1000" placeholder="Ask Copilot about this repository…">
+    <button type="submit" class="btn btn-primary">Ask</button>
+  </form>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+</body>
+</html>

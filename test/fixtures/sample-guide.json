@@ -1,0 +1,545 @@
+{
+  "_comment": "Sample section data for expressjs/cors at 5317ebe. Written by hand for canvas development. Load it with: node test/fixtures/load-sample.mjs <path to a cors clone>",
+  "overview": {
+    "summary": "cors is a Node.js middleware for Express and Connect. It sets the CORS (Cross-Origin Resource Sharing) response headers. The whole library is one file, `lib/index.js`, with two runtime dependencies.",
+    "purpose": "Express apps use it to tell browsers which other origins can call the API. It only sets headers. The browser enforces them.",
+    "stack": [
+      {
+        "name": "JavaScript (ES5, CommonJS)",
+        "role": "Library code. Supports Node.js 0.10 and later."
+      },
+      {
+        "name": "vary, object-assign",
+        "role": "Runtime dependencies."
+      },
+      {
+        "name": "Mocha, supertest, nyc",
+        "role": "Tests and coverage."
+      },
+      {
+        "name": "ESLint",
+        "role": "Lint rules for lib and test."
+      },
+      {
+        "name": "GitHub Actions",
+        "role": "CI on a large Node.js version matrix."
+      }
+    ],
+    "startHere": [
+      {
+        "path": "README.md",
+        "why": "Usage examples and every configuration option."
+      },
+      {
+        "path": "lib/index.js",
+        "why": "The whole middleware in 238 lines. Start at `middlewareWrapper` (line 192)."
+      },
+      {
+        "path": "test/test.js",
+        "why": "Unit tests with fake request and response objects. They show the effect of each option."
+      },
+      {
+        "path": "package.json",
+        "why": "The lint, test, and coverage scripts."
+      }
+    ],
+    "facts": [
+      {
+        "label": "Package",
+        "value": "cors 2.8.6"
+      },
+      {
+        "label": "Node.js",
+        "value": ">= 0.10"
+      },
+      {
+        "label": "Entry point",
+        "value": "lib/index.js"
+      }
+    ],
+    "method": {
+      "semanticSearch": true,
+      "indexedCommit": "5317ebe",
+      "notes": "Sample data written by hand for canvas development."
+    }
+  },
+  "map": {
+    "areas": [
+      {
+        "path": "lib",
+        "purpose": "The middleware. One file with the option defaults, one builder function for each header, and the Express wrapper.",
+        "refs": [
+          {
+            "path": "lib/index.js",
+            "startLine": 8,
+            "endLine": 13
+          }
+        ]
+      },
+      {
+        "path": "test",
+        "purpose": "Mocha tests. Unit tests use fake request and response objects. Integration tests use supertest with small Express apps.",
+        "refs": [
+          {
+            "path": "test/test.js",
+            "startLine": 21,
+            "endLine": 60
+          }
+        ]
+      },
+      {
+        "path": "test/support",
+        "purpose": "Test setup. Sets `NODE_ENV` to `test`."
+      },
+      {
+        "path": ".github/workflows",
+        "purpose": "CI (tests on Node.js 0.10 to 25), CodeQL, and OpenSSF Scorecard."
+      },
+      {
+        "path": "README.md",
+        "purpose": "User documentation and the configuration options."
+      },
+      {
+        "path": "HISTORY.md",
+        "purpose": "Release notes, newest first."
+      }
+    ],
+    "lookups": [
+      {
+        "question": "Where are the CORS headers set?",
+        "answer": "`cors()` builds a list of headers. `applyHeaders()` writes them to the response.",
+        "refs": [
+          {
+            "path": "lib/index.js",
+            "startLine": 144,
+            "endLine": 190
+          }
+        ]
+      },
+      {
+        "question": "Where are the default options?",
+        "answer": "The `defaults` object at the top of `lib/index.js`. `middlewareWrapper` merges them with your options.",
+        "refs": [
+          {
+            "path": "lib/index.js",
+            "startLine": 8,
+            "endLine": 13
+          },
+          {
+            "path": "lib/index.js",
+            "startLine": 208,
+            "endLine": 208
+          }
+        ]
+      },
+      {
+        "question": "How is an allowed origin checked?",
+        "answer": "`isOriginAllowed()` accepts a string, a RegExp, an array, or a boolean. An `origin` function runs first, in `middlewareWrapper`.",
+        "refs": [
+          {
+            "path": "lib/index.js",
+            "startLine": 19,
+            "endLine": 34
+          }
+        ]
+      },
+      {
+        "question": "Where do I add a test for a new option?",
+        "answer": "In `test/test.js`, in the matching `describe` block. Use the `fakeRequest` and `fakeResponse` helpers.",
+        "refs": [
+          {
+            "path": "test/test.js",
+            "startLine": 13,
+            "endLine": 19
+          }
+        ]
+      }
+    ]
+  },
+  "architecture": {
+    "summary": "A request goes through `middlewareWrapper`, which resolves the options (static, a function for each request, or an origin callback). Then `cors()` builds the headers. A preflight (`OPTIONS`) request ends with status 204, unless `preflightContinue` is set.",
+    "components": [
+      {
+        "name": "middlewareWrapper",
+        "responsibility": "Public entry point. Resolves the options for each request and calls `cors()`.",
+        "paths": [
+          "lib/index.js"
+        ],
+        "dependsOn": [
+          "cors()"
+        ]
+      },
+      {
+        "name": "cors()",
+        "responsibility": "Builds the header list for preflight or actual requests. Ends preflight requests.",
+        "paths": [
+          "lib/index.js"
+        ],
+        "dependsOn": [
+          "Header builders",
+          "applyHeaders"
+        ]
+      },
+      {
+        "name": "Header builders",
+        "responsibility": "`configureOrigin`, `configureMethods`, `configureCredentials`, `configureAllowedHeaders`, `configureExposedHeaders`, `configureMaxAge`: one function for each header.",
+        "paths": [
+          "lib/index.js"
+        ]
+      },
+      {
+        "name": "applyHeaders",
+        "responsibility": "Writes the headers to the response. Uses `vary()` for the `Vary` header.",
+        "paths": [
+          "lib/index.js"
+        ]
+      }
+    ],
+    "flows": [
+      {
+        "name": "Preflight request (OPTIONS)",
+        "trigger": "The browser sends OPTIONS before a request that is not simple.",
+        "steps": [
+          {
+            "text": "`corsMiddleware` resolves the options and merges the defaults.",
+            "ref": {
+              "path": "lib/index.js",
+              "startLine": 203,
+              "endLine": 208
+            }
+          },
+          {
+            "text": "The origin callback, if there is one, decides the allowed origin.",
+            "ref": {
+              "path": "lib/index.js",
+              "startLine": 218,
+              "endLine": 226
+            }
+          },
+          {
+            "text": "`cors()` builds the origin, credentials, methods, allowed headers, max age, and exposed headers.",
+            "ref": {
+              "path": "lib/index.js",
+              "startLine": 163,
+              "endLine": 171
+            }
+          },
+          {
+            "text": "The response ends with 204 and `Content-Length: 0`, unless `preflightContinue` is true.",
+            "ref": {
+              "path": "lib/index.js",
+              "startLine": 173,
+              "endLine": 181
+            }
+          }
+        ]
+      },
+      {
+        "name": "Actual request",
+        "trigger": "Any request that is not OPTIONS.",
+        "steps": [
+          {
+            "text": "`cors()` sets only the origin, credentials, and exposed headers.",
+            "ref": {
+              "path": "lib/index.js",
+              "startLine": 182,
+              "endLine": 187
+            }
+          },
+          {
+            "text": "`next()` gives control to your route handler.",
+            "ref": {
+              "path": "lib/index.js",
+              "startLine": 188,
+              "endLine": 188
+            }
+          }
+        ]
+      }
+    ],
+    "decisions": [
+      {
+        "title": "Support very old Node.js versions",
+        "detail": "The code uses ES5 and `var`, and CI tests from Node.js 0.10. Do not use newer syntax in `lib/`.",
+        "refs": [
+          {
+            "path": "package.json"
+          },
+          {
+            "path": ".github/workflows/ci.yml"
+          }
+        ]
+      }
+    ]
+  },
+  "conventions": {
+    "conventions": [
+      {
+        "title": "Two-space indent and single quotes",
+        "category": "style",
+        "rule": "ESLint enforces a 2-space indent and single quotes in `lib` and `test`.",
+        "source": "documented",
+        "evidence": [
+          {
+            "path": ".eslintrc.yml"
+          }
+        ],
+        "example": {
+          "path": "lib/index.js",
+          "startLine": 15,
+          "endLine": 17,
+          "snippet": "  function isString(s) {\n    return typeof s === 'string' || s instanceof String;\n  }"
+        }
+      },
+      {
+        "title": "ES5 only in library code",
+        "category": "style",
+        "rule": "Use `var` and function expressions. Do not use arrow functions or classes in `lib/`, so that old Node.js versions still work.",
+        "source": "observed",
+        "evidence": [
+          {
+            "path": "lib/index.js",
+            "startLine": 1,
+            "endLine": 13
+          },
+          {
+            "path": "test/test.js",
+            "startLine": 1,
+            "endLine": 12
+          },
+          {
+            "path": "test/example-app.js",
+            "startLine": 1,
+            "endLine": 8
+          }
+        ]
+      },
+      {
+        "title": "One configure function for each header",
+        "category": "naming",
+        "rule": "Each CORS header has its own `configureX(options)` function that returns header objects. Add a new header in the same way.",
+        "source": "observed",
+        "evidence": [
+          {
+            "path": "lib/index.js",
+            "startLine": 73,
+            "endLine": 143
+          }
+        ]
+      },
+      {
+        "title": "Errors go to next()",
+        "category": "errors",
+        "rule": "Errors from option or origin callbacks go to `next(err)`. The middleware does not throw them.",
+        "source": "observed",
+        "evidence": [
+          {
+            "path": "lib/index.js",
+            "startLine": 204,
+            "endLine": 221
+          }
+        ]
+      },
+      {
+        "title": "Conventional PR titles",
+        "category": "git",
+        "rule": "Recent PR titles start with `fix:`, `docs:`, `chore:`, or `build(deps):`.",
+        "source": "observed",
+        "evidence": []
+      }
+    ]
+  },
+  "workflow": {
+    "setup": [
+      {
+        "text": "Install Node.js. Any current LTS version works for development."
+      },
+      {
+        "text": "Install the dependencies.",
+        "command": "npm install"
+      }
+    ],
+    "commands": [
+      {
+        "command": "npm test",
+        "purpose": "Runs the lint, then the tests with coverage. Run it before you open a PR.",
+        "kind": "test",
+        "source": {
+          "path": "package.json"
+        }
+      },
+      {
+        "command": "npm run lint",
+        "purpose": "ESLint on `lib` and `test`.",
+        "kind": "lint",
+        "source": {
+          "path": "package.json"
+        }
+      },
+      {
+        "command": "npm run test-ci",
+        "purpose": "Mocha tests with nyc coverage, without the lint.",
+        "kind": "test",
+        "source": {
+          "path": "package.json"
+        }
+      }
+    ],
+    "ci": [
+      {
+        "name": "ci",
+        "path": ".github/workflows/ci.yml",
+        "runs": "On push and pull request: lint and tests on Node.js 0.10 to 25. Coverage goes to Coveralls."
+      },
+      {
+        "name": "CodeQL",
+        "path": ".github/workflows/codeql.yml",
+        "runs": "Code scanning for security problems."
+      },
+      {
+        "name": "Scorecard",
+        "path": ".github/workflows/scorecard.yml",
+        "runs": "OpenSSF Scorecard supply-chain checks."
+      }
+    ],
+    "contributing": [
+      "There is no CONTRIBUTING file. Follow the contribution guide of the Express organization.",
+      "Keep `lib/index.js` compatible with Node.js 0.10.",
+      "Add a test in `test/test.js` for each change in behavior.",
+      "Docs changes go in `README.md`. Release notes go in `HISTORY.md`."
+    ]
+  },
+  "pullRequests": [
+    {
+      "number": 386,
+      "kind": "docs",
+      "summary": "Simplifies the README code examples and adds a comment above each example that shows the exact headers that cors adds.",
+      "why": "Part of an effort to reduce confusion in the docs (issue #384). The examples must show which headers the library adds, because that is all the library does.",
+      "walkthrough": [
+        {
+          "title": "Header comments on the basic examples",
+          "detail": "Each basic example gets a `// Adds headers: ...` comment above the route.",
+          "refs": [
+            {
+              "path": "README.md"
+            }
+          ],
+          "excerpt": "+// Adds headers: Access-Control-Allow-Origin: *\n app.use(cors())"
+        },
+        {
+          "title": "Shorter response messages",
+          "detail": "Messages such as 'This is CORS-enabled for all origins!' become 'Hello', so that the examples show only what the library does.",
+          "refs": [
+            {
+              "path": "README.md"
+            }
+          ],
+          "excerpt": "-  res.json({msg: 'This is CORS-enabled for all origins!'})\n+  res.json({msg: 'Hello'})"
+        },
+        {
+          "title": "Headers for the dynamic examples",
+          "detail": "The dynamic example shows the headers for each branch, including `Vary: Origin` and `Access-Control-Allow-Credentials`.",
+          "refs": [
+            {
+              "path": "README.md"
+            }
+          ],
+          "excerpt": "+    // Access-Control-Allow-Origin: http://mydomain.com, Access-Control-Allow-Credentials: true, Vary: Origin"
+        }
+      ],
+      "tests": "Docs only. No code or test changes.",
+      "reviewNotes": [
+        "A second commit fixed the header comments to include `Vary` and credentials."
+      ],
+      "teaches": [
+        "`Vary: Origin` is added when the allowed origin is not `*`.",
+        "Keep README examples small and focused on what the library adds."
+      ]
+    },
+    {
+      "number": 388,
+      "kind": "chore",
+      "summary": "Removes `HISTORY.md` and a CONTRIBUTING file that does not exist from the npm `files` list.",
+      "why": "npm adds README and LICENSE automatically, and HISTORY.md is not needed by users. The published package gets smaller.",
+      "walkthrough": [
+        {
+          "title": "Only the library file is listed",
+          "detail": "The `files` array now lists only `lib/index.js`. npm still adds `package.json`, `README.md`, and `LICENSE`.",
+          "refs": [
+            {
+              "path": "package.json"
+            }
+          ],
+          "excerpt": "   \"files\": [\n-    \"lib/index.js\",\n-    \"CONTRIBUTING.md\",\n-    \"HISTORY.md\",\n-    \"LICENSE\",\n-    \"README.md\"\n+    \"lib/index.js\"\n   ],"
+        }
+      ],
+      "tests": "None. The PR description shows `npm pack --dry-run` output before and after.",
+      "reviewNotes": [
+        "Approved by 3 maintainers with no comments."
+      ],
+      "teaches": [
+        "Use `npm pack --dry-run` to check what a release publishes."
+      ]
+    }
+  ],
+  "changes": {
+    "summary": "Recent work is mostly documentation and release work. The library code (`lib/index.js`) has not changed in these PRs.",
+    "source": "gh"
+  },
+  "journey": {
+    "welcome": "Welcome to cors. The library is small: one file of about 240 lines. In about an hour you can read all of it, run the tests, and make a first change.",
+    "firstSteps": [
+      {
+        "title": "Read the README usage section",
+        "detail": "Learn the 3 ways to configure cors: no options, static options, and a function for each request.",
+        "target": {
+          "section": "overview"
+        }
+      },
+      {
+        "title": "Trace a preflight request",
+        "detail": "Follow the steps from `corsMiddleware` to the 204 response.",
+        "target": {
+          "section": "architecture",
+          "item": "preflight-request-options"
+        }
+      },
+      {
+        "title": "Run the tests",
+        "detail": "Run `npm install`, then `npm test`. All tests must pass before you change code.",
+        "target": {
+          "section": "workflow",
+          "item": "npm-test"
+        }
+      },
+      {
+        "title": "Learn the style rules",
+        "detail": "ES5 only, 2-space indent, single quotes.",
+        "target": {
+          "section": "conventions"
+        }
+      },
+      {
+        "title": "Study a recent pull request",
+        "detail": "PR #386 shows how the maintainers think about the docs.",
+        "target": {
+          "section": "changes",
+          "item": "386"
+        }
+      },
+      {
+        "title": "Find where a header is set",
+        "detail": "Open `applyHeaders` and see how `Vary` is handled.",
+        "target": {
+          "section": "map",
+          "item": "where-are-the-cors-headers-set"
+        },
+        "prompt": "Show me how applyHeaders in lib/index.js handles the Vary header, and why it uses the vary package."
+      }
+    ],
+    "gaps": [
+      "The repository has no CONTRIBUTING file, so the contribution rules come from the code and recent PRs.",
+      "There are no architecture docs. The architecture section is based on the code."
+    ]
+  }
+}
