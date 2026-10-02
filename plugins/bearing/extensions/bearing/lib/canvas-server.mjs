@@ -4,11 +4,13 @@
 
 import { execFile } from "node:child_process";
 import { randomBytes } from "node:crypto";
+import { watch } from "node:fs";
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { guideEvents, loadGuide, loadProgress, setStepDone } from "./guide-store.mjs";
+import { guideDir } from "./paths.mjs";
 import { AskError, buildAskPrompt } from "./prompts.mjs";
 
 const UI_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "ui");
@@ -84,10 +86,31 @@ export async function startCanvasServer({ guideId, sendPrompt, openUrl = openInB
     const broadcast = (event, data) => {
         for (const client of clients) client.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
     };
+    // In-process saves send events at once. Saves from another session's
+    // extension process show up through the folder watch. Both are merged.
+    let changeTimer = null;
+    const scheduleChange = (section) => {
+        clearTimeout(changeTimer);
+        changeTimer = setTimeout(() => broadcast("change", { section }), 100);
+    };
     const onChange = (event) => {
-        if (event.guideId === state.guideId) broadcast("change", { section: event.section });
+        if (event.guideId === state.guideId) scheduleChange(event.section);
     };
     guideEvents.on("change", onChange);
+    let watcher = null;
+    const watchGuide = (id) => {
+        watcher?.close();
+        watcher = null;
+        try {
+            watcher = watch(guideDir(id), { persistent: false }, (_event, file) => {
+                if (String(file ?? "").endsWith(".json")) scheduleChange(null);
+            });
+            watcher.on("error", () => {});
+        } catch {
+            // The folder can be missing for a moment; in-process events still work.
+        }
+    };
+    watchGuide(guideId);
     const keepAlive = setInterval(() => {
         for (const client of clients) client.write(": keep-alive\n\n");
     }, 25_000);
@@ -175,6 +198,7 @@ export async function startCanvasServer({ guideId, sendPrompt, openUrl = openInB
         },
         setGuideId(next) {
             state.guideId = next;
+            watchGuide(next);
             broadcast("change", { section: null });
         },
         navigate(section, itemId) {
@@ -183,6 +207,8 @@ export async function startCanvasServer({ guideId, sendPrompt, openUrl = openInB
         },
         async close() {
             guideEvents.off("change", onChange);
+            watcher?.close();
+            clearTimeout(changeTimer);
             clearInterval(keepAlive);
             for (const client of clients) client.end();
             clients.clear();

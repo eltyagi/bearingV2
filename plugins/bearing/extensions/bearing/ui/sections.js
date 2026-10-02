@@ -790,7 +790,6 @@ function pullRequestDetails(ctx, pr, id) {
         list(pr.teaches).length
             ? h("div", { class: "detail" }, h("h4", { class: "with-icon" }, icon("bulb", 14), h("span", { text: "What this teaches" })), h("ul", { class: "bullets" }, list(pr.teaches).map((lesson) => h("li", null, rich(textOf(lesson, "text"))))))
             : null,
-        relatedLinks(ctx, pr.related),
         list(pr.files).length
             ? h(
                 "details",
@@ -806,20 +805,6 @@ function pullRequestDetails(ctx, pr, id) {
             askButton(ctx, "changes", String(pr.number), "Go deeper with Copilot"),
         ),
     );
-}
-
-function relatedLinks(ctx, related) {
-    if (!related || typeof related !== "object") return null;
-    const links = [];
-    for (const id of list(related.areas)) {
-        const area = list(ctx.guide.sections.map?.areas).find((item) => item.id === id);
-        if (area) links.push(h("button", { type: "button", class: "chip", on: { click: () => ctx.go("map", id) } }, icon("folder", 12), h("span", { text: area.path })));
-    }
-    for (const id of list(related.conventions)) {
-        const convention = list(ctx.guide.sections.conventions?.conventions).find((item) => item.id === id);
-        if (convention) links.push(h("button", { type: "button", class: "chip", on: { click: () => ctx.go("conventions", id) } }, icon("rule", 12), h("span", { text: convention.title })));
-    }
-    return links.length ? h("div", { class: "related" }, h("span", { class: "small muted", text: "Related in this guide" }), links) : null;
 }
 
 function renderFirstSteps(ctx) {

@@ -244,12 +244,6 @@ button.path-link:hover .icon, button.path-link:focus-visible .icon { opacity: 1;
 .tag-ok { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 45%, transparent); }
 .with-tag { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 
-.chip {
-  display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px;
-  border: 1px solid var(--border); border-radius: 999px; background: none; font-size: 12px;
-}
-.chip:hover { background: var(--tint); }
-
 .filter {
   display: flex; align-items: center; gap: 8px; max-width: 360px;
   padding: 0 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--tint); color: var(--muted);
@@ -359,7 +353,6 @@ button.path-link:hover .icon, button.path-link:focus-visible .icon { opacity: 1;
 .detail h4 { font-size: 13px; font-weight: var(--semibold); }
 .detail > p { max-width: 70ch; }
 .with-icon { display: inline-flex; align-items: center; gap: 6px; }
-.related { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .files summary { cursor: pointer; font-size: 13px; color: var(--muted); }
 .files summary:hover { color: var(--fg); }
 .files ul { display: grid; gap: 4px; margin-top: 8px; }
