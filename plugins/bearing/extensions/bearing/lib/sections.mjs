@@ -35,9 +35,11 @@ const LIST_LIMITS = {
 
 // Lists whose items get stable IDs, and the field that names each item.
 const ID_LISTS = {
+    overview: { startHere: "path" },
     map: { areas: "path", lookups: "question" },
     architecture: { components: "name", flows: "name", decisions: "title" },
     conventions: { conventions: "title" },
+    workflow: { commands: "command" },
     journey: { firstSteps: "title" },
 };
 
