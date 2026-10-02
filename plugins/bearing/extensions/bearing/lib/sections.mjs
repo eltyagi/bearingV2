@@ -14,10 +14,13 @@ const REQUIRED = {
     architecture: ["summary"],
     conventions: ["conventions"],
     workflow: ["commands"],
-    "pull-request": ["number", "title", "summary", "walkthrough"],
+    "pull-request": ["number", "summary", "walkthrough"],
     changes: [],
     journey: ["welcome", "firstSteps"],
 };
+
+// Pull request fields that come from GitHub. They replace the agent's copies.
+const PR_FACT_KEYS = ["number", "title", "url", "author", "mergedAt", "labels", "additions", "deletions", "changedFiles", "files", "closingIssues"];
 
 const LIST_LIMITS = {
     overview: { stack: 12, startHere: 6 },
@@ -211,15 +214,41 @@ export async function prepareSection(section, data, rootPath) {
     return { data: clean, warnings };
 }
 
+function pickFacts(pr) {
+    return Object.fromEntries(PR_FACT_KEYS.filter((key) => pr?.[key] !== undefined).map((key) => [key, pr[key]]));
+}
+
+function sortPullRequests(list) {
+    return list.sort((a, b) => String(b.mergedAt ?? "").localeCompare(String(a.mergedAt ?? ""))).slice(0, 10);
+}
+
+// Records GitHub facts for pull requests. With replace, the list becomes
+// exactly these pull requests (walkthroughs that exist are kept).
+export function recordPullRequestFacts(guide, factsList, { replace = false, now = new Date() } = {}) {
+    const existing = guide.sections.changes ?? { status: "pending" };
+    const byNumber = new Map((existing.pullRequests ?? []).map((pr) => [pr.number, pr]));
+    const updated = factsList.map((facts) => ({ status: "pending", ...byNumber.get(facts.number), ...pickFacts(facts) }));
+    const others = replace ? [] : (existing.pullRequests ?? []).filter((pr) => !factsList.some((facts) => facts.number === pr.number));
+    guide.sections.changes = {
+        ...existing,
+        status: existing.status === "ready" ? "ready" : "pending",
+        reason: undefined,
+        pullRequests: sortPullRequests([...others, ...updated]),
+        updatedAt: now.toISOString(),
+    };
+    return guide.sections.changes;
+}
+
 export function applySection(guide, section, data, { status = "ready", reason = null, now = new Date() } = {}) {
     const time = now.toISOString();
     const existing = guide.sections[section === "pull-request" ? "changes" : section] ?? {};
     if (section === "pull-request") {
+        const current = (existing.pullRequests ?? []).find((pr) => pr.number === data.number);
+        const entry = { ...data, ...pickFacts(current), status: "ready", savedAt: time };
+        entry.title ??= `Pull request #${data.number}`;
+        if (!entry.url && guide.repository?.fullName) entry.url = `https://github.com/${guide.repository.fullName}/pull/${data.number}`;
         const others = (existing.pullRequests ?? []).filter((pr) => pr.number !== data.number);
-        const pullRequests = [...others, { ...data, savedAt: time }]
-            .sort((a, b) => String(b.mergedAt ?? "").localeCompare(String(a.mergedAt ?? "")))
-            .slice(0, 10);
-        guide.sections.changes = { ...existing, status: existing.status ?? "pending", pullRequests, updatedAt: time };
+        guide.sections.changes = { ...existing, status: existing.status ?? "pending", pullRequests: sortPullRequests([...others, entry]), updatedAt: time };
         return guide.sections.changes;
     }
     if (status === "unavailable") {
@@ -254,7 +283,7 @@ export function guideOutline(guide) {
             architecture: { ...state(s.architecture), components: pick(s.architecture?.components, "id", "name"), flows: pick(s.architecture?.flows, "id", "name") },
             conventions: { ...state(s.conventions), conventions: pick(s.conventions?.conventions, "id", "title") },
             workflow: { ...state(s.workflow), commands: s.workflow?.commands?.length ?? 0 },
-            changes: { ...state(s.changes), pullRequests: pick(s.changes?.pullRequests, "number", "title") },
+            changes: { ...state(s.changes), pullRequests: pick(s.changes?.pullRequests, "number", "title", "status") },
             journey: { ...state(s.journey), firstSteps: pick(s.journey?.firstSteps, "id", "title") },
         },
     };

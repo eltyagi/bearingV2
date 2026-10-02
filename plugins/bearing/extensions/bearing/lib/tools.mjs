@@ -2,10 +2,11 @@
 // Errors are thrown with a clear message; the runtime returns them as failures.
 
 import { BearingError } from "./git.mjs";
+import { getPullRequest, listMergedPullRequests } from "./github.mjs";
 import { createGuide, loadGuide, requireGuide, updateGuide } from "./guide-store.mjs";
 import { isValidGuideId } from "./paths.mjs";
 import { scanRepository } from "./repo-scan.mjs";
-import { applySection, guideOutline, prepareSection, SAVE_TARGETS } from "./sections.mjs";
+import { applySection, guideOutline, prepareSection, recordPullRequestFacts, SAVE_TARGETS } from "./sections.mjs";
 
 const json = (value) => JSON.stringify(value);
 
@@ -127,4 +128,57 @@ export const getGuideTool = {
     handler: async ({ guideId } = {}) => json(guideOutline(await requireGuide(requireGuideId(guideId)))),
 };
 
-export const guideTools = [scanRepositoryTool, saveGuideSectionTool, getGuideTool];
+async function requireGitHubGuide(guideId) {
+    const guide = await requireGuide(requireGuideId(guideId));
+    if (!guide.repository.fullName) {
+        throw new BearingError("no_github_remote", 'The repository has no GitHub remote. Mark the "changes" section unavailable.');
+    }
+    return guide;
+}
+
+export const listMergedPullRequestsTool = {
+    name: "bearing_list_merged_pull_requests",
+    description:
+        "List the latest pull requests merged into the default branch of the guide's GitHub repository. Bot authors (Dependabot, Renovate, and others) are left out. The pull requests are also added to the guide, so the canvas shows them while you write the walkthroughs. Read-only; uses the GitHub CLI.",
+    parameters: {
+        type: "object",
+        properties: {
+            guideId: { type: "string", description: "The guideId from bearing_scan_repository." },
+            limit: { type: "integer", minimum: 1, maximum: 10, description: "Default: 5." },
+        },
+        required: ["guideId"],
+        additionalProperties: false,
+    },
+    skipPermission: true,
+    handler: async ({ guideId, limit = 5 } = {}) => {
+        const guide = await requireGitHubGuide(guideId);
+        const { fullName, defaultBranch } = guide.repository;
+        const result = await listMergedPullRequests(fullName, defaultBranch, { limit });
+        await updateGuide(guideId, "changes", (current) => recordPullRequestFacts(current, result.pullRequests, { replace: true }));
+        return json({ repository: fullName, baseBranch: defaultBranch, ...result });
+    },
+};
+
+export const getPullRequestTool = {
+    name: "bearing_get_pull_request",
+    description:
+        "Get one merged pull request of the guide's repository for a walkthrough: description, changed files, commits, reviews, review comments, linked issues, and a diff with a size limit (lockfiles and generated files are left out). Read-only; uses the GitHub CLI.",
+    parameters: {
+        type: "object",
+        properties: {
+            guideId: { type: "string", description: "The guideId from bearing_scan_repository." },
+            number: { type: "integer", minimum: 1, description: "The pull request number." },
+        },
+        required: ["guideId", "number"],
+        additionalProperties: false,
+    },
+    skipPermission: true,
+    handler: async ({ guideId, number } = {}) => {
+        const guide = await requireGitHubGuide(guideId);
+        const pr = await getPullRequest(guide.repository.fullName, number);
+        await updateGuide(guideId, "changes", (current) => recordPullRequestFacts(current, [pr]));
+        return json(pr);
+    },
+};
+
+export const guideTools = [scanRepositoryTool, saveGuideSectionTool, getGuideTool, listMergedPullRequestsTool, getPullRequestTool];

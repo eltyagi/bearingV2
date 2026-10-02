@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createGuide, guideEvents, loadGuide, loadProgress, setStepDone, updateGuide } from "../plugins/bearing/extensions/bearing/lib/guide-store.mjs";
 import { guideDir } from "../plugins/bearing/extensions/bearing/lib/paths.mjs";
-import { applySection, guideOutline, prepareSection } from "../plugins/bearing/extensions/bearing/lib/sections.mjs";
+import { applySection, guideOutline, prepareSection, recordPullRequestFacts } from "../plugins/bearing/extensions/bearing/lib/sections.mjs";
 
 const home = await mkdtemp(join(tmpdir(), "bearing-home-"));
 process.env.COPILOT_HOME = home;
@@ -78,16 +78,28 @@ test("prepareSection rejects missing required fields and trims long content", as
     assert.ok(warnings.some((warning) => warning.startsWith("conventions: kept the first 20")));
 });
 
-test("pull requests are added one at a time and sorted by merge time", async () => {
+test("pull request facts come first, and GitHub facts replace the agent's copies", async () => {
     await newGuide("acme__prs");
-    const pr = (number, mergedAt) => ({ number, title: `PR ${number}`, mergedAt, summary: "s", walkthrough: [{ title: "t" }] });
-    for (const item of [pr(1, "2026-01-01T00:00:00Z"), pr(3, "2026-03-01T00:00:00Z"), pr(1, "2026-01-01T00:00:00Z")]) {
-        const { data } = await prepareSection("pull-request", item, repoRoot);
-        await updateGuide("acme__prs", "pull-request", (guide) => applySection(guide, "pull-request", data));
-    }
+    const facts = (number, mergedAt) => ({ number, title: `Real title ${number}`, url: `https://github.com/acme/demo/pull/${number}`, author: "dev", mergedAt });
+    await updateGuide("acme__prs", "changes", (guide) =>
+        recordPullRequestFacts(guide, [facts(1, "2026-01-01T00:00:00Z"), facts(3, "2026-03-01T00:00:00Z")], { replace: true }),
+    );
+    let changes = (await loadGuide("acme__prs")).sections.changes;
+    assert.deepEqual(changes.pullRequests.map((pr) => [pr.number, pr.status]), [[3, "pending"], [1, "pending"]]);
+
+    const narrative = { number: 1, title: "Invented title", url: "https://example.com", summary: "s", walkthrough: [{ title: "t" }] };
+    const { data } = await prepareSection("pull-request", narrative, repoRoot);
+    await updateGuide("acme__prs", "pull-request", (guide) => applySection(guide, "pull-request", data));
+    await updateGuide("acme__prs", "changes", (guide) => recordPullRequestFacts(guide, [{ number: 1, files: [{ path: "a.js" }] }]));
     await updateGuide("acme__prs", "changes", (guide) => applySection(guide, "changes", { source: "gh" }));
-    const changes = (await loadGuide("acme__prs")).sections.changes;
-    assert.deepEqual(changes.pullRequests.map((item) => item.number), [3, 1]);
+
+    changes = (await loadGuide("acme__prs")).sections.changes;
+    const first = changes.pullRequests.find((pr) => pr.number === 1);
+    assert.equal(first.title, "Real title 1");
+    assert.equal(first.url, "https://github.com/acme/demo/pull/1");
+    assert.equal(first.status, "ready");
+    assert.equal(first.summary, "s");
+    assert.deepEqual(first.files, [{ path: "a.js" }]);
     assert.equal(changes.status, "ready");
     assert.equal(changes.source, "gh");
 });
