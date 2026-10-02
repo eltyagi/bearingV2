@@ -423,6 +423,10 @@ function layoutTree(ctx, areas, matches, filtering) {
         rows.push(treeRow(ctx, entry, area, { depth: 0, expandable, open }));
         if (open) for (const child of visibleChildren) rows.push(treeRow(ctx, child, child.area, { depth: 1 }));
     }
+    const omitted = ctx.guide.scan?.treeOmitted;
+    if (!filtering && omitted > 0) {
+        rows.push(h("li", { class: "tree-row tree-more" }, h("span", { class: "toggle-space" }), h("span"), h("p", { class: "small muted", text: `${formatNumber(omitted)} more top-level entries are not shown.` })));
+    }
     return rows.length ? h("ul", { class: "tree" }, rows) : emptyNote("No paths match the filter.");
 }
 

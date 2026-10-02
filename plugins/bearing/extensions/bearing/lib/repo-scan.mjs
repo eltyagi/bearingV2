@@ -9,6 +9,8 @@ import { guideIdFor } from "./paths.mjs";
 
 export const SMALL_REPOSITORY_LIMIT = 2000;
 const MAX_LINE_COUNT_BYTES = 512 * 1024;
+const MAX_TOP_LEVEL = 100;
+const RECENT_COMMITS = 15;
 
 const LANGUAGES = {
     js: "JavaScript", mjs: "JavaScript", cjs: "JavaScript", jsx: "JavaScript",
@@ -95,6 +97,7 @@ async function languageStats(root, files, withLines) {
 }
 
 // Top-level entries with file counts, and the largest subfolders of each folder.
+// Returns at most MAX_TOP_LEVEL entries and the number that were left out.
 function topLevelTree(files) {
     const entries = new Map();
     for (const path of files) {
@@ -108,10 +111,10 @@ function topLevelTree(files) {
         if (rest.length) dir.children.set(second, (dir.children.get(second) ?? 0) + 1);
         entries.set(first, dir);
     }
-    return [...entries.values()]
-        .sort((a, b) => (a.type === b.type ? a.path.localeCompare(b.path) : a.type === "dir" ? -1 : 1))
-        .slice(0, 60)
-        .map((entry) =>
+    const sorted = [...entries.values()].sort((a, b) => (a.type === b.type ? a.path.localeCompare(b.path) : a.type === "dir" ? -1 : 1));
+    return {
+        omitted: Math.max(0, sorted.length - MAX_TOP_LEVEL),
+        entries: sorted.slice(0, MAX_TOP_LEVEL).map((entry) =>
             entry.type === "file"
                 ? entry
                 : {
@@ -123,7 +126,8 @@ function topLevelTree(files) {
                         .slice(0, 12)
                         .map(([name, count]) => ({ path: `${entry.path}/${name}`, files: count })),
                 },
-        );
+        ),
+    };
 }
 
 function keyDocs(files) {
@@ -140,10 +144,11 @@ function keyDocs(files) {
 
 async function hotspots(root, ref, fileSet) {
     if (!ref) return { window: null, files: [] };
-    const recent = Number((await git(root, ["rev-list", "--count", "--since=90 days ago", ref], { allowFailure: true }))?.trim() || 0);
+    // Merge commits list no files, so they do not count toward the window choice.
+    const recent = Number((await git(root, ["rev-list", "--count", "--no-merges", "--since=90 days ago", ref], { allowFailure: true }))?.trim() || 0);
     const window = recent >= 10 ? "last 90 days" : "last 200 commits";
     const range = recent >= 10 ? ["--since=90 days ago"] : ["-n", "200"];
-    const log = (await git(root, ["log", ref, ...range, "--no-renames", "--name-only", "--format="], { allowFailure: true })) ?? "";
+    const log = (await git(root, ["log", ref, ...range, "--no-merges", "--no-renames", "--name-only", "--format="], { allowFailure: true })) ?? "";
     const counts = new Map();
     for (const path of log.split("\n")) {
         if (path && fileSet.has(path) && isSource(path)) counts.set(path, (counts.get(path) ?? 0) + 1);
@@ -154,6 +159,17 @@ async function hotspots(root, ref, fileSet) {
         .map(([path, commits]) => ({ path, commits }));
     const lastCommitAt = (await git(root, ["log", "-1", "--format=%cI", ref], { allowFailure: true }))?.trim() || null;
     return { window, files, lastCommitAt };
+}
+
+// Subjects of the latest commits (not merges). The agents have no shell, so
+// this is how they see the commit message style.
+async function recentCommitSubjects(root, ref) {
+    if (!ref) return [];
+    const log = await git(root, ["log", ref, "--no-merges", "-n", String(RECENT_COMMITS), "--format=%s"], { allowFailure: true });
+    return (log ?? "")
+        .split("\n")
+        .map((subject) => subject.trim().slice(0, 120))
+        .filter(Boolean);
 }
 
 export async function scanRepository(rootPath, { now = new Date() } = {}) {
@@ -176,13 +192,17 @@ export async function scanRepository(rootPath, { now = new Date() } = {}) {
         headCommit: repo.headCommit,
         linkRef: repo.linkRef,
     };
+    const historyRef = repo.defaultRef ?? (repo.headCommit ? "HEAD" : null);
+    const tree = topLevelTree(files);
     const scan = {
         scannedAt: now.toISOString(),
         size: { trackedFiles: files.length, sourceFiles: sourceFiles.length, lines, sizeClass, limit: SMALL_REPOSITORY_LIMIT },
         languages,
-        tree: topLevelTree(files),
+        tree: tree.entries,
+        treeOmitted: tree.omitted,
         docs: keyDocs(files),
-        hotspots: await hotspots(repo.root, repo.defaultRef ?? (repo.headCommit ? "HEAD" : null), new Set(files)),
+        hotspots: await hotspots(repo.root, historyRef, new Set(files)),
+        recentCommits: await recentCommitSubjects(repo.root, historyRef),
     };
     return { repository, scan };
 }

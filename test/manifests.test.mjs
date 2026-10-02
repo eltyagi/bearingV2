@@ -25,5 +25,6 @@ test("the plugin manifest paths exist", async () => {
     const pluginRoot = join(repoRoot, "plugins/bearing");
     const manifest = await readJson("plugins/bearing/plugin.json");
     await access(join(pluginRoot, manifest.agents));
+    await access(join(pluginRoot, manifest.skills, "onboard-repo", "SKILL.md"));
     await access(join(pluginRoot, manifest.extensions, "bearing", "extension.mjs"));
 });

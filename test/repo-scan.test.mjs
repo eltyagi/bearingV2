@@ -68,6 +68,8 @@ test("scanRepository reports identity, size, languages, tree, docs, and hotspots
     assert.deepEqual(scan.docs.map((doc) => doc.kind), ["readme", "contributing", "ci-workflow"]);
     assert.equal(scan.hotspots.files[0].path, "src/index.js");
     assert.equal(scan.hotspots.files[0].commits, 2);
+    assert.deepEqual(scan.recentCommits, ["second", "first"]);
+    assert.equal(scan.treeOmitted, 0);
 });
 
 test("scanRepository fails clearly outside a git repository", async (t) => {

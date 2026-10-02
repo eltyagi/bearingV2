@@ -32,7 +32,8 @@ The task prompt gives you `guideId` and `rootPath`. If one is missing, stop and 
 2. Call `bearing_get_pull_request` for each pull request. Get all of them first, so that you can see how they relate
    (for example, a later pull request that finishes or fixes an earlier one).
 3. If you need context, `view` the current version of the main changed files in `rootPath`.
-4. Write and save each walkthrough with `section: "pull-request"`, newest first, one call for each pull request.
+4. Write and save each walkthrough with `section: "pull-request"`, newest first. Make one save in each response:
+   several large saves in one response can be cut, and then a save is lost.
 5. Save the `changes` section with a `summary` of 2 or 3 sentences: what the recent work is about, which areas it touches,
    and what that tells a new developer. Add `"source": "gh"`.
 

@@ -280,11 +280,11 @@ export function guideOutline(guide) {
         },
         updatedAt: guide.updatedAt,
         sections: {
-            overview: state(s.overview),
+            overview: { ...state(s.overview), startHere: pick(s.overview?.startHere, "id", "path") },
             map: { ...state(s.map), areas: pick(s.map?.areas, "id", "path"), lookups: pick(s.map?.lookups, "id", "question") },
             architecture: { ...state(s.architecture), components: pick(s.architecture?.components, "id", "name"), flows: pick(s.architecture?.flows, "id", "name") },
             conventions: { ...state(s.conventions), conventions: pick(s.conventions?.conventions, "id", "title") },
-            workflow: { ...state(s.workflow), commands: s.workflow?.commands?.length ?? 0 },
+            workflow: { ...state(s.workflow), commands: pick(s.workflow?.commands, "id", "command") },
             changes: { ...state(s.changes), pullRequests: pick(s.changes?.pullRequests, "number", "title", "status") },
             journey: { ...state(s.journey), firstSteps: pick(s.journey?.firstSteps, "id", "title") },
         },

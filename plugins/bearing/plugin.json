@@ -17,5 +17,6 @@
     "canvas"
   ],
   "agents": "agents/",
+  "skills": "skills/",
   "extensions": "extensions"
 }

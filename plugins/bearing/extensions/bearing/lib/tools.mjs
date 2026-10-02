@@ -26,9 +26,13 @@ function scanSummary(repository, scan) {
         headIsDefaultBranch: Boolean(repository.headCommit) && repository.headCommit === repository.defaultBranchCommit,
         size: scan.size,
         languages: scan.languages.map((entry) => `${entry.name} ${entry.percent}%`).join(", "),
-        topLevel: scan.tree.map((entry) => (entry.type === "dir" ? `${entry.path}/ (${entry.files} files)` : entry.path)),
+        topLevel: [
+            ...scan.tree.map((entry) => (entry.type === "dir" ? `${entry.path}/ (${entry.files} files)` : entry.path)),
+            ...(scan.treeOmitted ? [`… and ${scan.treeOmitted} more top-level entries`] : []),
+        ],
         docs: scan.docs.map((doc) => `${doc.path} [${doc.kind}]`),
         hotspots: scan.hotspots.files.map((file) => `${file.path} (${file.commits} commits, ${scan.hotspots.window})`),
+        recentCommits: scan.recentCommits,
     };
 }
 

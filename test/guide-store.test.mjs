@@ -124,7 +124,7 @@ test("parallel saves keep every section, emit events, and show in the outline", 
     const outline = guideOutline(await loadGuide("acme__parallel"));
     assert.equal(outline.sections.overview.status, "ready");
     assert.equal(outline.sections.architecture.status, "ready");
-    assert.equal(outline.sections.workflow.commands, 1);
+    assert.deepEqual(outline.sections.workflow.commands, [{ id: "npm-test", command: "npm test" }]);
     assert.deepEqual(outline.sections.journey, { status: "unavailable", reason: "The agent failed.", firstSteps: [] });
     assert.deepEqual(events.sort(), ["architecture", "journey", "overview", "workflow"]);
 });

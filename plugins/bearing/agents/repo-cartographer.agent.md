@@ -143,6 +143,8 @@ Use exactly these field names. The lists show the target size. The tool cuts lis
 - `category`: one of `style`, `naming`, `structure`, `errors`, `testing`, `docs`, `git`, `other`.
 - `source: "documented"` when a config file or a doc states the rule (lint config, CONTRIBUTING, editorconfig). Cite that file.
 - `source: "observed"` only when the same pattern is in 3 or more files. Cite at least 3 of them. One example is not a convention.
+- For commit message conventions, use the recent commit subjects in the scan summary. You cannot read the git history.
+  A pattern in most of the subjects is `observed`; cite the files that document it, if any.
 - `example.snippet`: at most 12 lines, copied exactly from the file at those lines.
 
 ### workflow
