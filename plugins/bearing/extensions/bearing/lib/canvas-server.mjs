@@ -1,6 +1,9 @@
 // Loopback HTTP server for one canvas instance. It serves the UI files, the
 // guide JSON, live updates (Server-Sent Events), and three POST actions:
 // checklist progress, "Ask Copilot", and opening a GitHub link.
+// Each instance has a secret token. The page URL carries it (?k=), and GET
+// calls for the page and the data need it, so other local programs cannot
+// read the page token and send prompts. POST calls send it in a header.
 
 import { execFile } from "node:child_process";
 import { randomBytes } from "node:crypto";
@@ -119,16 +122,17 @@ export async function startCanvasServer({ guideId, sendPrompt, openUrl = openInB
     async function handle(req, res) {
         const host = req.headers.host ?? "";
         if (host !== `127.0.0.1:${port}` && host !== `localhost:${port}`) throw new HttpError(421, "Unexpected host.");
-        const { pathname } = new URL(req.url ?? "/", "http://127.0.0.1");
+        const { pathname, searchParams } = new URL(req.url ?? "/", "http://127.0.0.1");
 
         if (req.method === "GET") {
-            if (pathname === "/") {
-                const html = (await readFile(join(UI_DIR, "index.html"), "utf8")).replace("{{TOKEN}}", token);
-                return send(res, 200, "text/html; charset=utf-8", html, { "Content-Security-Policy": CSP });
-            }
             if (STATIC_FILES[pathname]) {
                 const [file, type] = STATIC_FILES[pathname];
                 return send(res, 200, type, await readFile(join(UI_DIR, file)));
+            }
+            if (searchParams.get("k") !== token) throw new HttpError(403, "The page token is not valid.");
+            if (pathname === "/") {
+                const html = (await readFile(join(UI_DIR, "index.html"), "utf8")).replace("{{TOKEN}}", token);
+                return send(res, 200, "text/html; charset=utf-8", html, { "Content-Security-Policy": CSP });
             }
             if (pathname === "/api/guide") {
                 const guide = await loadGuide(state.guideId);
@@ -192,7 +196,7 @@ export async function startCanvasServer({ guideId, sendPrompt, openUrl = openInB
     port = server.address().port;
 
     return {
-        url: `http://127.0.0.1:${port}/`,
+        url: `http://127.0.0.1:${port}/?k=${token}`,
         get guideId() {
             return state.guideId;
         },

@@ -69,7 +69,10 @@ In the canvas:
 - To delete a guide, delete its folder. To delete all guides, delete `~/.copilot/extensions/bearing/artifacts/guides/`.
 - Bearing does not change your repository. It does not run install, build, or test commands.
 - The pull request tools run read-only `gh` commands. Bearing does not store a GitHub token.
-- The canvas server listens only on `127.0.0.1`, and each canvas has its own token.
+- The canvas server listens only on `127.0.0.1`. Each canvas has its own secret token in the page URL, so other local programs
+  cannot read the guide or send prompts to your session.
+- "Ask Copilot" prompts name the guide item only by its ID. The item text goes in a separate reference block, because it
+  came from the repository and from pull requests.
 
 ## Limits
 

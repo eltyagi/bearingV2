@@ -5,6 +5,7 @@ import { h, icon } from "./dom.js";
 import { renderMasthead, renderSection, renderTabs, statusOf, TABS, tabForSection } from "./sections.js";
 
 const token = document.querySelector('meta[name="bearing-token"]')?.content ?? "";
+const tokenQuery = `?k=${encodeURIComponent(token)}`;
 const masthead = document.getElementById("masthead");
 const tabsEl = document.getElementById("tabs");
 const content = document.getElementById("content");
@@ -47,7 +48,7 @@ async function post(path, body) {
 }
 
 async function loadGuide() {
-    const response = await fetch("/api/guide", { cache: "no-store" });
+    const response = await fetch(`/api/guide${tokenQuery}`, { cache: "no-store" });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.message || "The guide could not be loaded.");
     ctx.guide = data.guide;
@@ -260,7 +261,7 @@ function scheduleReload() {
 }
 
 function listen() {
-    const events = new EventSource("/events");
+    const events = new EventSource(`/events${tokenQuery}`);
     events.addEventListener("change", scheduleReload);
     events.addEventListener("open", scheduleReload);
     events.addEventListener("navigate", (event) => {
@@ -276,10 +277,12 @@ function listen() {
 // ---------------------------------------------------------------------------
 // Start
 
+// Listen before the first render: if bad data stops a render, a later save
+// can still update the page.
 try {
     await loadGuide();
-    applyRoute();
     listen();
+    applyRoute();
 } catch (error) {
     showFatal(error.message);
 }

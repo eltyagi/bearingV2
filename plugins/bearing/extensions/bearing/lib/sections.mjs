@@ -92,7 +92,8 @@ function trim(value, key, depth, warnings, where) {
         return value;
     }
     if (Array.isArray(value)) {
-        let list = value;
+        let list = value.filter((item) => item !== null && item !== undefined);
+        if (list.length < value.length) warnings.push(`${where}: removed ${value.length - list.length} empty items`);
         if (depth >= 3 && list.length > MAX_NESTED_LIST) {
             warnings.push(`${where}: kept the first ${MAX_NESTED_LIST} of ${list.length} items`);
             list = list.slice(0, MAX_NESTED_LIST);

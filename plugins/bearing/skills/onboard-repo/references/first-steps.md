@@ -13,7 +13,7 @@ from the guide outline (`bearing_get_guide`) and the agents' summaries. Do not r
       "title": "Run the tests",
       "detail": "Run `npm ci`, then `npm test`. All tests must pass before you change code.",
       "target": { "section": "workflow", "item": "npm-test" },
-      "prompt": "Optional. A question that the Help button sends to Copilot."
+      "prompt": "Optional. A suggested question. The Help button sends it to Copilot with the step."
     }
   ],
   "gaps": ["What the guide could not confirm, for example: No CONTRIBUTING file."]

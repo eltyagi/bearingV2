@@ -2,7 +2,7 @@
 // cannot get easily. Identity, size, languages, top-level tree, key docs, and
 // hotspots. The agents find commands, conventions, and architecture.
 
-import { readFile, stat } from "node:fs/promises";
+import { lstat, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { git, listTrackedFiles, readRepository } from "./git.mjs";
 import { guideIdFor } from "./paths.mjs";
@@ -72,7 +72,10 @@ async function languageStats(root, files, withLines) {
         let fileLines = 0;
         try {
             const absolute = join(root, path);
-            size = (await stat(absolute)).size;
+            // lstat: a tracked symlink to a device or a FIFO must not be read.
+            const info = await lstat(absolute);
+            if (!info.isFile()) continue;
+            size = info.size;
             if (withLines && size <= MAX_LINE_COUNT_BYTES) fileLines = countLines(await readFile(absolute));
         } catch {
             continue;
