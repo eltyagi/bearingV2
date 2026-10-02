@@ -1,16 +1,12 @@
-// Bearing extension entry point.
+// Bearing extension entry point: wiring only. The logic is in lib/.
 //
-// Step 1 spike: one stub tool and one stub canvas. They verify plugin loading,
-// subagent tool access, theme-token injection under a strict CSP, and
-// session.send from the canvas. Later steps move the real logic into lib/.
+// The canvas below is still the step 1 spike canvas. Step 5 replaces it.
 
 import { createServer } from "node:http";
-import { execFile } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { promisify } from "node:util";
 import { joinSession, createCanvas, CanvasError } from "@github/copilot-sdk/extension";
+import { guideTools } from "./lib/tools.mjs";
 
-const execFileAsync = promisify(execFile);
 const MAX_BODY_BYTES = 16 * 1024;
 const MAX_LOGGED_REQUESTS = 60;
 const SPIKE_PROMPT = [
@@ -63,73 +59,6 @@ async function readBody(req) {
         throw httpError(400, "The request body is not valid JSON.");
     }
 }
-
-async function gitRemote(rootPath) {
-    try {
-        const { stdout } = await execFileAsync("git", ["-C", rootPath, "remote", "get-url", "origin"], {
-            timeout: 5000,
-        });
-        return stdout.trim();
-    } catch {
-        return null;
-    }
-}
-
-async function probeCommand(command, args) {
-    try {
-        const { stdout, stderr } = await execFileAsync(command, args, { timeout: 15_000 });
-        return { ok: true, out: `${stdout}${stderr}`.trim().split("\n").slice(0, 4) };
-    } catch (error) {
-        return {
-            ok: false,
-            code: error.code ?? null,
-            out: `${error.stdout ?? ""}${error.stderr ?? ""}${error.message ?? ""}`.trim().split("\n").slice(0, 4),
-        };
-    }
-}
-
-const scanRepositoryTool = {
-    name: "bearing_scan_repository",
-    description: "Spike stub. Returns basic facts about a local git repository.",
-    parameters: {
-        type: "object",
-        properties: {
-            rootPath: { type: "string", description: "Absolute path to the repository root." },
-            probeGh: { type: "boolean", description: "Spike only: also probe the gh CLI." },
-        },
-        required: ["rootPath"],
-        additionalProperties: false,
-    },
-    skipPermission: true,
-    handler: async ({ rootPath, probeGh }) => {
-        const session = await sessionReady;
-        const result = {
-            stub: true,
-            rootPath,
-            processCwd: process.cwd(),
-            node: process.version,
-            copilotHome: process.env.COPILOT_HOME ?? null,
-            workspacePath: session.workspacePath ?? null,
-            gitRemote: await gitRemote(rootPath),
-        };
-        if (probeGh) {
-            result.env = {
-                hasGhToken: Boolean(process.env.GH_TOKEN),
-                hasGithubToken: Boolean(process.env.GITHUB_TOKEN),
-                path: process.env.PATH ?? null,
-            };
-            result.gh = {
-                version: await probeCommand("gh", ["--version"]),
-                auth: await probeCommand("gh", ["auth", "status", "--hostname", "github.com"]),
-                api: await probeCommand("gh", ["api", "repos/expressjs/cors", "--jq", ".default_branch"]),
-                prList: await probeCommand("gh", [
-                    "pr", "list", "-R", "expressjs/cors", "--state", "merged", "--limit", "1", "--json", "number,title",
-                ]),
-            };
-        }
-        return JSON.stringify(result);
-    },
-};
 
 function spikeHtml({ instanceId, guideId, token, cspMode }) {
     return `<!doctype html>
@@ -455,7 +384,7 @@ const guideCanvas = createCanvas({
 });
 
 const session = await joinSession({
-    tools: [scanRepositoryTool],
+    tools: guideTools,
     canvases: [guideCanvas],
 });
 resolveSession(session);
