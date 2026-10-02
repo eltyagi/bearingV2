@@ -9,8 +9,6 @@
     "node": ">=22"
   },
   "scripts": {
-    "test": "node --test \"test/**/*.test.mjs\"",
-    "validate": "node scripts/validate-plugin.mjs",
-    "check": "npm test && npm run validate"
+    "test": "node --test \"test/**/*.test.mjs\""
   }
 }
