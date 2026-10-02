@@ -1,0 +1,14 @@
+{
+  "name": "bearing-v2",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Development workspace for Bearing, an onboarding plugin for the GitHub Copilot app.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"test/**/*.test.mjs\""
+  }
+}

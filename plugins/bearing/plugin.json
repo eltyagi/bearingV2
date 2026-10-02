@@ -1,0 +1,21 @@
+{
+  "name": "bearing",
+  "description": "Onboard to a small repository: a codebase map from the Copilot semantic index, key coding conventions, and walkthroughs of recent merged pull requests in an interactive canvas.",
+  "version": "2.0.0",
+  "author": {
+    "name": "Bearing contributors"
+  },
+  "repository": "https://github.com/eltyagi/bearingV2",
+  "homepage": "https://github.com/eltyagi/bearingV2",
+  "license": "MIT",
+  "keywords": [
+    "onboarding",
+    "codebase-map",
+    "coding-conventions",
+    "pull-requests",
+    "semantic-search",
+    "canvas"
+  ],
+  "agents": "agents/",
+  "extensions": "extensions"
+}
