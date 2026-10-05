@@ -16,6 +16,9 @@ changes and implementation decisions under human control.
 
 **Narrative:** [Read the customer-facing Bearing narrative](narrative.md).
 
+**Modernization assessment concept:** [Project brief](modernization-brief.md), [branded Word brief](modernization-brief.docx),
+and [customer deck](modernization-assessment.pptx). This is a proposed project, not an implemented Bearing capability.
+
 ## Why an enterprise customer would use it
 
 | Business need | Bearing response | Customer value |
