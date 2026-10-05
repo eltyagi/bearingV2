@@ -16,6 +16,8 @@ changes and implementation decisions under human control.
 
 **Narrative:** [Read the customer-facing Bearing narrative](narrative.md).
 
+**Workshop knowledge base:** [Reusable building blocks and workshop recipes](workshop-building-blocks.md).
+
 ## Why an enterprise customer would use it
 
 | Business need | Bearing response | Customer value |
