@@ -19,6 +19,8 @@ changes and implementation decisions under human control.
 **Modernization assessment concept:** [Project brief](modernization-brief.md), [branded Word brief](modernization-brief.docx),
 and [customer deck](modernization-assessment.pptx). This is a proposed project, not an implemented Bearing capability.
 
+**Workshop knowledge base:** [Reusable building blocks and workshop recipes](workshop-building-blocks.md).
+
 ## Why an enterprise customer would use it
 
 | Business need | Bearing response | Customer value |
