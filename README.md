@@ -6,6 +6,7 @@ step-by-step walkthroughs of recently merged pull requests, all in an interactiv
 
 For installation and use, see [plugins/bearing/README.md](plugins/bearing/README.md).
 Hackathon submission copy, the demo plan, and the slide deck live in [submission/](submission/README.md).
+The customer-facing narrative is [submission/narrative.md](submission/narrative.md).
 
 ## Enterprise relevance
 

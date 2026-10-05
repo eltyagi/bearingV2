@@ -14,6 +14,8 @@ changes and implementation decisions under human control.
 
 **Word count:** 133
 
+**Narrative:** [Read the customer-facing Bearing narrative](narrative.md).
+
 ## Why an enterprise customer would use it
 
 | Business need | Bearing response | Customer value |
