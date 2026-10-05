@@ -5,6 +5,29 @@ a codebase map from the Copilot semantic index, key coding conventions, the deve
 step-by-step walkthroughs of recently merged pull requests, all in an interactive canvas.
 
 For installation and use, see [plugins/bearing/README.md](plugins/bearing/README.md).
+Hackathon submission copy, the demo plan, and the slide deck live in [submission/](submission/README.md).
+The customer-facing narrative is [submission/narrative.md](submission/narrative.md).
+
+## Enterprise relevance
+
+Bearing targets a recurring engineering productivity problem: developers moving into an unfamiliar service spend their
+first hours or days reconstructing context from scattered documentation, code, tribal knowledge, and pull request history.
+The immediate user is a new or rotating developer; engineering enablement, platform engineering, and service owners benefit
+from a repeatable onboarding experience that does not require every team to maintain a bespoke portal. Relevant scenarios
+include internal mobility, acquisition integration, ownership transfer, incident support, and onboarding consultants or
+partners to a bounded codebase.
+
+## Workflow transformation
+
+Bearing transforms a manual onboarding ritual into a reusable GitHub Copilot App workflow:
+
+| Stage | Before | With Bearing |
+|---|---|---|
+| Plan | A developer guesses where to begin or waits for a service owner. | The skill scopes the repository, detects available context, and opens a consistent guide structure. |
+| Delegate | One person manually searches code, docs, and pull requests. | A coordinating agent delegates repository mapping and change-history research to role-scoped specialists in parallel. |
+| Validate | Notes and chat answers are difficult to trace. | Claims link to files and pull requests; invalid references are removed and missing evidence is marked unavailable. |
+| Review | Knowledge transfer depends on a synchronous walkthrough. | The developer reviews a live canvas, opens evidence, asks focused follow-ups, and decides what to trust. |
+| Scale | Every team invents its own onboarding document or session. | The same plugin, instructions, controls, and measures can be piloted and reused across eligible repositories. |
 
 ## Layout
 
@@ -51,6 +74,64 @@ flowchart LR
 
 The save tool does light checks only: it cuts long lists and text, removes references to files that do not exist and line
 ranges that are not valid, and returns warnings. Missing required fields are the only errors.
+
+## Roles
+
+| Role | Responsibility |
+|---|---|
+| Developer | Starts onboarding, chooses whether to reuse or refresh an existing guide, checks important claims, asks follow-up questions, and decides what work to do. |
+| Service owner or engineering manager | Reviews the guide against known architecture and policy, resolves gaps, and approves the repository for broader use. |
+| Enablement, platform, or field team | Selects pilot repositories, communicates the customer-ready narrative, measures outcomes, and scales the pattern under enterprise controls. |
+| Main Copilot agent | Scans the repository, opens the canvas, coordinates the specialist agents, handles failures, and creates the first-contribution checklist. |
+| Repository cartographer | Uses the semantic index and repository files to map architecture, conventions, workflow, and the best reading order. |
+| Pull request historian | Uses read-only GitHub data to explain the latest merged pull requests as step-by-step codebase lessons. |
+| Bearing extension and canvas | Provides deterministic scanning, storage, validation, GitHub retrieval, live guide updates, navigation, and Ask Copilot actions. |
+
+## Prerequisites
+
+- GitHub Copilot app with canvas and plugin support.
+- Git and Node.js 22 or later for local development and tests.
+- GitHub CLI authentication for recent pull request walkthroughs. The app provides `gh`.
+- A small repository, ideally about 2,000 tracked files or fewer, with a GitHub remote for the complete experience.
+
+## Adoption path
+
+1. **Pilot:** install Bearing for one well-understood repository and compare its guide with the service owner's expectations.
+2. **Calibrate:** refine repository documentation and agent instructions where the evidence reveals gaps or ambiguity.
+3. **Enable:** give developers the same `/onboard-repo` entry point and a short verification checklist.
+4. **Measure:** track time to orientation, evidence coverage, guide completeness, and first-task readiness.
+5. **Scale:** expand to similar repositories after the organization approves data handling, tool permissions, retention,
+   and review expectations. Large repositories and monorepos need further product hardening.
+
+## Governance considerations
+
+- Bearing is read-only: it does not change the target repository or run its install, build, or test commands.
+- Repository files and pull request text are treated as untrusted data, not instructions for the agents.
+- Claims are grounded in files the agents read; observed conventions require evidence from at least three files.
+- Guides and checklist progress are stored locally under the Copilot extension data directory and can be deleted by the user.
+- Pull request access uses read-only `gh` calls. The extension does not store a GitHub token.
+- The canvas binds to loopback only and uses a per-instance secret token for guide reads and actions.
+- The prototype is intended for small repositories on github.com; important facts still require developer verification.
+- Production adoption should additionally define repository eligibility, organization-approved model and retention policies,
+  audit requirements, access reviews, and an owner responsible for validating the generated onboarding experience.
+
+## Human-in-the-loop model
+
+The developer deliberately starts Bearing and retains the decisions that matter. They choose whether to open or rebuild
+an existing guide, see sections arrive while research runs, verify cited code and pull request evidence, and use focused
+Ask Copilot actions to resolve uncertainty. Bearing stops at orientation: it proposes a first-contribution path but does
+not edit code, execute repository commands, or begin implementation. The developer decides whether any recommended work
+is correct and safe.
+
+## Success measures
+
+These measures are appropriate for a field trial; the prototype does not yet collect telemetry.
+
+- **Time to orientation:** minutes from `/onboard-repo` to a complete or explicitly unavailable seven-section guide.
+- **Evidence coverage:** share of architecture, convention, and workflow claims linked to repository files or pull requests.
+- **Guide completeness:** number of sections reaching `ready` rather than remaining `pending`.
+- **First-task readiness:** whether a new developer can identify the files, commands, and next steps for a first contribution.
+- **Safe operation:** no target-repository changes, no repository commands executed, and no credentials persisted.
 
 ## Platform facts that shaped the design
 
