@@ -2,24 +2,25 @@
 
 ## Short project summary
 
-Enterprise engineering organizations lose time when developers rotate across teams, inherit services, support incidents,
-or integrate acquired codebases because critical context is fragmented across documentation, source, tribal knowledge, and
-pull request history. Bearing serves new or rotating developers and the enablement teams responsible for getting them
-productive safely. In the GitHub Copilot app, `/onboard-repo` opens a live canvas while a coordinating agent runs two
-least-privilege specialists in parallel. One maps architecture, conventions, and workflow through the semantic index and
-verified files; the other converts recent merged pull requests into step-by-step lessons. Results appear incrementally with
-evidence links, persistent first steps, and focused Ask Copilot actions. The reusable plugin makes onboarding inspectable,
-governed, and available in the developer's existing environment, reducing repeated discovery work while keeping code
-changes and implementation decisions under human control.
+Bearing is a light forward-deployed engineer for any team. Input: a repository. Output: what is worth optimizing, with
+evidence. A forward-deployed engineer embeds with a team, explores its codebase, and returns a cited picture of where to
+improve. Bearing packages that first pass as a repeatable GitHub Copilot app workflow, so account teams, customer success,
+solution sales, and developer stakeholders can run a light pass before a deep-dive. Built today: `/onboard-repo` runs two
+read-only, least-privilege agents in parallel and fills a live canvas with a cited map, conventions marked documented or
+observed, workflow, merged-PR lessons, first steps, and explicit unavailable sections, then stops before implementation.
+Evidence gaps are the first optimization signals; ranked optimization candidates with task briefs are proposed, not built.
+Humans review every stage.
 
-**Word count:** 133
+**Word count:** 126
 
 **Narrative:** [Read the customer-facing Bearing narrative](narrative.md).
 
-**Enterprise deck:** [18-slide branded deck](bearing-enterprise-deck.pptx) covering the AI trust gap, Bearing's
-evidence-first workflow, the delegated work and human review gates at each stage, the proposed modernization assessment, and a persona view of how account teams, customer success,
-solution sales, and developer stakeholders could reuse the pattern. Slides marked Prototype are implemented; slides marked
-Emerging reuse today's guide but are not yet validated; slides marked Proposed are not built.
+**Enterprise deck:** [19-slide branded deck](bearing-enterprise-deck.pptx) covering the AI trust gap, Bearing's
+evidence-first workflow, the delegated work and human review gates at each stage, a slide on the "light forward-deployed
+engineer" input and output (a repository in, what to optimize out), the proposed modernization assessment, and a persona
+view of how account teams, customer success, solution sales, and developer stakeholders could run a light FDE pass.
+Slides marked Prototype are implemented; slides marked Emerging reuse today's guide but are not yet validated; slides
+marked Proposed are not built. Ranked optimization candidates are Proposed; Bearing does not find optimizations today.
 
 **Modernization assessment concept:** [Project brief](modernization-brief.md) and [branded Word brief](modernization-brief.docx).
 This is a proposed project, not an implemented Bearing capability.
@@ -28,8 +29,13 @@ This is a proposed project, not an implemented Bearing capability.
 
 ## Why an enterprise customer would use it
 
+A forward-deployed engineer's first pass on a codebase is expensive and hard to repeat. Bearing makes a light version of
+it repeatable: read-only, cited, and ending in a human decision. It does not replace a real forward-deployed engineer or
+the service owner.
+
 | Business need | Bearing response | Customer value |
 |---|---|---|
+| Teams want a first-pass view of a repository before a deep-dive | `/onboard-repo` is the light FDE pass: a read-only, cited exploration of one repository. | A cited picture and visible evidence gaps (Emerging) to act on. Ranked optimization candidates are proposed, not built. |
 | Developers rotate into unfamiliar services | One consistent `/onboard-repo` workflow builds a repository-specific guide. | Less repeated discovery and fewer interruptions for service owners. |
 | Important context is distributed across code, docs, and pull requests | Parallel specialists combine semantic repository context with recent GitHub history. | A faster path from "where is everything?" to an evidence-backed mental model. |
 | Generated guidance can be wrong or over-privileged | Read-only agents cite files, limit tools by role, mark unavailable sections, and stop before implementation. | Reviewable output with bounded actions and an explicit human decision point. |
@@ -47,7 +53,7 @@ This is a proposed project, not an implemented Bearing capability.
 The repository includes the complete reusable unit: plugin manifest, skill, specialist agents, role-scoped tool lists,
 dispatch prompts, deterministic extension tools, local storage, canvas UI, sample data, and tests.
 
-## Workflow transformation: plan, delegate, validate, review, scale
+## Workflow transformation: plan, delegate, validate, review, ship
 
 | Stage | GitHub Copilot App workflow |
 |---|---|
@@ -55,21 +61,21 @@ dispatch prompts, deterministic extension tools, local storage, canvas UI, sampl
 | **Delegate** | The coordinating agent starts two specialist agents in parallel, each with a narrow role and least-privilege tool set. |
 | **Validate** | Specialists verify semantic-search results in repository files; extension tools validate paths and line ranges, and unavailable evidence stays explicit. |
 | **Review** | The live canvas exposes sources and status progressively. The developer can inspect evidence, ask focused questions, reuse or refresh a guide, and decide whether to act. |
-| **Scale** | The plugin packages the workflow, prompts, tools, interface, storage, controls, and measures so another team can install and repeat it. |
+| **Ship** | The first-steps checklist is handed over and Bearing stops before implementation. The plugin packages the workflow, prompts, tools, interface, storage, controls, and measures so another team can install and repeat it. |
 
 This is workflow transformation, not a claim that an agent should replace engineering judgment. It automates the repeated
-discovery and synthesis work around an existing onboarding process, then adds review gates at repository selection,
-evidence inspection, follow-up questioning, and the decision to begin implementation.
+discovery and synthesis work of a first-pass repository exploration (the light FDE pass), then adds review gates at
+repository selection, evidence inspection, follow-up questioning, and the decision to begin implementation.
 
 ## Field-ready customer playbook
 
 **Who uses the pattern:** account teams and solution engineers can introduce it; customer success and enablement teams can
-run the pilot; service owners validate the output; developers use the guide.
+run the pilot; service owners validate the output; developers use the guide. Each audience runs the same light FDE pass.
 
 1. Select one small repository whose owner can verify the generated result.
 2. Baseline the current onboarding experience: time spent, people interrupted, sources consulted, and first task attempted.
-3. Install Bearing, run `/onboard-repo`, and review the guide with the service owner rather than presenting it as ground truth.
-4. Capture documentation gaps, policy questions, inaccurate evidence, and unavailable sections as pilot findings.
+3. Install Bearing, run `/onboard-repo` as the light FDE pass, and review the guide with the service owner rather than presenting it as ground truth.
+4. Capture documentation gaps, policy questions, inaccurate evidence, and unavailable sections as pilot findings; these are the first optimization signals.
 5. Agree success measures and enterprise controls before expanding to the next repository cohort.
 6. Reuse the demo narrative: "Copilot plans the journey, delegates bounded research, validates evidence, and returns control
    to the developer before any implementation begins."
@@ -131,10 +137,10 @@ and GitHub context shown end to end.
 | Criterion | Evidence in this submission |
 |---|---|
 | Enterprise relevance and customer value | Enterprise scenarios and value table above; consistent onboarding for team rotation, ownership transfer, incidents, and acquisition integration. |
-| Repeatability and field usability | Two-command installation, one invocation, reusable plugin assets, plan-to-scale workflow, field customer playbook, proposed success measures, demo script. |
+| Repeatability and field usability | Two-command installation, one invocation, reusable plugin assets, plan-to-ship workflow, light FDE pass for field personas, field customer playbook, proposed success measures, demo script. |
 | Governance, security, Responsible AI, human-in-the-loop | Role-scoped tools, read-only behavior, untrusted-data instructions, evidence rules, local storage, loopback token, explicit review and production controls. |
 | Competitive positioning | Implemented multi-agent workflow, semantic repository context, GitHub pull request history, deterministic tools, durable state, and interactive canvas. |
-| Storytelling and demo clarity | Three-slide deck and a timed 2:50 problem-to-value demo script. |
+| Storytelling and demo clarity | 19-slide enterprise deck (repository in, what to optimize out) and a timed 2:50 problem-to-value demo script. |
 | Product feedback bonus | Five concrete GitHub Copilot App product recommendations grounded in development experience. |
 
 ## GitHub Copilot App product feedback
@@ -157,6 +163,6 @@ and GitHub context shown end to end.
 - [x] Project summary is no more than 150 words.
 - [x] Competitive-edge paragraph is drafted.
 - [x] Bonus GitHub Copilot App product feedback is drafted.
-- [x] Slide deck is complete: [bearing-hackathon-deck.pptx](bearing-hackathon-deck.pptx).
+- [x] Slide deck is complete: [bearing-enterprise-deck.pptx](bearing-enterprise-deck.pptx).
 - [ ] Demo video is recorded, no more than three minutes, and linked here.
 - [ ] External submission is finalised.

@@ -10,6 +10,12 @@ The customer-facing narrative is [submission/narrative.md](submission/narrative.
 
 ## Enterprise relevance
 
+**A light forward-deployed engineer for any team.** Input: a repository. Output: what is worth optimizing, with evidence.
+Account teams, customer success, solution sales, and developers can run this first-pass, read-only exploration before a
+deep-dive; it does not replace a real forward-deployed engineer or the service owner. Prototype (built): the cited
+exploration. Emerging: its evidence gaps are the first optimization signals. Proposed (not built): ranked optimization
+candidates with task briefs; Bearing does not find optimizations today. See [submission/README.md](submission/README.md).
+
 Bearing targets a recurring engineering productivity problem: developers moving into an unfamiliar service spend their
 first hours or days reconstructing context from scattered documentation, code, tribal knowledge, and pull request history.
 The immediate user is a new or rotating developer; engineering enablement, platform engineering, and service owners benefit
