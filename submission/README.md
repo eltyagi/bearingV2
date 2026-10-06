@@ -16,9 +16,10 @@ changes and implementation decisions under human control.
 
 **Narrative:** [Read the customer-facing Bearing narrative](narrative.md).
 
-**Enterprise deck:** [16-slide branded deck](bearing-enterprise-deck.pptx) covering the AI trust gap, Bearing's
-evidence-first workflow, and the proposed modernization assessment. Slides marked Prototype are implemented; slides marked
-Proposed are not.
+**Enterprise deck:** [17-slide branded deck](bearing-enterprise-deck.pptx) covering the AI trust gap, Bearing's
+evidence-first workflow, the proposed modernization assessment, and a persona view of how account teams, customer success,
+solution sales, and developer stakeholders could reuse the pattern. Slides marked Prototype are implemented; slides marked
+Emerging reuse today's guide but are not yet validated; slides marked Proposed are not built.
 
 **Modernization assessment concept:** [Project brief](modernization-brief.md) and [branded Word brief](modernization-brief.docx).
 This is a proposed project, not an implemented Bearing capability.
