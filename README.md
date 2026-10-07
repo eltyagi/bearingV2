@@ -10,11 +10,12 @@ The customer-facing narrative is [submission/narrative.md](submission/narrative.
 
 ## Enterprise relevance
 
-**A light forward-deployed engineer for any team.** Input: a repository. Output: what is worth optimizing, with evidence.
-Account teams, customer success, solution sales, and developers can run this first-pass, read-only exploration before a
-deep-dive; it does not replace a real forward-deployed engineer or the service owner. Prototype (built): the cited
-exploration. Emerging: its evidence gaps are the first optimization signals. Proposed (not built): ranked optimization
-candidates with task briefs; Bearing does not find optimizations today. See [submission/README.md](submission/README.md).
+**Light FDE as a service.** Customers now ask for AI outcomes and impact, not just adoption. The direction: help field teams
+walk through discovery, generate requirement surveys, and turn confirmed requirements into workshops from a knowledge base. It
+does not replace forward-deployed engineers, service owners or facilitators. Prototype (built): repository discovery with
+`/onboard-repo`. Emerging: the workshop building blocks, a document. Proposed (not built): stakeholder discovery, surveys,
+response synthesis, workshop assembly, and a private Pages workspace per customer. Effectiveness is a hypothesis to pilot; see
+[submission/README.md](submission/README.md) and [submission/fde-evidence.md](submission/fde-evidence.md).
 
 Bearing targets a recurring engineering productivity problem: developers moving into an unfamiliar service spend their
 first hours or days reconstructing context from scattered documentation, code, tribal knowledge, and pull request history.
@@ -52,6 +53,8 @@ plugins/bearing/
     ├── lib/                        Scan, guide store, light checks, gh calls, canvas server, prompts
     └── ui/                         Canvas page (HTML, CSS, JavaScript; no dependencies)
 test/                               node:test tests and a sample guide
+docs/                               Static customer-workspace template (Proposed surface, unpublished)
+submission/                         Deck, narrative, workshop building blocks, evidence
 ```
 
 ## How it works
