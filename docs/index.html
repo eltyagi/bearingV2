@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Light FDE as a service: workspace template</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Light FDE as a service</h1>
+  <p>Workspace template for customer engagements. Bearing | GitHub Copilot App workflow</p>
+</div></header>
+<main>
+
+<div class="note warn">
+  <span class="tag proposed">Proposed</span> This site is a <strong>static template</strong>. It is not published,
+  has no access control configured, and does not run any workflow. Only repository discovery
+  (<code>/onboard-repo</code>) is built. Surveys, response synthesis and workshop assembly are not built.
+</div>
+
+<h2>The idea</h2>
+<p>Customers now ask for AI outcomes and impact. A light forward-deployed engineer helps field teams
+<strong>discover</strong> the customer's situation, <strong>survey</strong> for fine-grained requirements and turn them into a
+<strong>workshop</strong>. Copilot does the first pass; a named person approves each gate. It does not replace forward-deployed
+engineers, service owners or facilitators.</p>
+
+<h2>Customers and people</h2>
+<p>One workspace page per customer engagement, owned by an account owner. The example below is fictional.</p>
+<table>
+  <tr><th>Customer</th><th>Account owner</th><th>Stage</th><th>Next gate</th></tr>
+  <tr>
+    <td><a href="customer-template.html">Example Co</a> <span class="tag illustrative">Illustrative</span></td>
+    <td>Placeholder</td><td>Requirements</td><td>Customer confirms requirements</td>
+  </tr>
+</table>
+
+<h2>Who sees which customer</h2>
+<p><span class="tag proposed">Proposed</span> GitHub Pages access control is set for the whole site, not per page or per person.
+A privately published site is open only to people with read access to the repository it is published from, and publishing
+privately needs an organization on GitHub Enterprise Cloud with a private or internal repository
+(<a href="https://docs.github.com/en/enterprise-cloud@latest/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site">GitHub docs</a>,
+checked 2026-10-07). So "different customers for different people" means one repository, and one private site, per customer.
+Grant read access by team to the people on that engagement.</p>
+<table>
+  <tr><th>Design choice</th><th>Why</th></tr>
+  <tr><td>One repository and site per customer</td><td>Site access follows repository read access, so a customer's people-list is the repository's team list.</td></tr>
+  <tr><td>Synthetic or approved content only</td><td>Do not put customer data here without explicit authorization. This template repository stays free of it.</td></tr>
+  <tr><td>Page per stage, gate log per page</td><td>Each stage records the approver and date, so nothing moves on without a named person.</td></tr>
+</table>
+
+<h2>Reference material</h2>
+<ul>
+  <li><a href="https://github.com/eltyagi/bearingV2/blob/main/submission/workshop-building-blocks.md">Workshop building blocks B1 to B8</a>
+      <span class="tag emerging">Emerging</span> (a document; recommended designs, not proven outcomes)</li>
+  <li><a href="https://github.com/eltyagi/bearingV2/blob/main/submission/fde-evidence.md">Evidence on the FDE model and the shift to outcomes</a>
+      (sources, methods and strength)</li>
+  <li><a href="https://github.com/eltyagi/bearingV2/blob/main/plugins/bearing/README.md">Bearing plugin guide</a>
+      <span class="tag prototype">Prototype</span> (repository discovery)</li>
+  <li><a href="https://github.com/eltyagi/bearingV2/blob/main/submission/bearing-enterprise-deck.pptx">Slide deck</a></li>
+</ul>
+
+</main>
+<footer>
+  Status tags. Prototype: built and runnable in the repository. Emerging: exists as a document or design; not validated or automated.
+  Proposed: not built. Illustrative: invented example, not a real customer.
+</footer>
+</body>
+</html>

@@ -2,34 +2,50 @@
 
 ## Short project summary
 
-Enterprise engineering organizations lose time when developers rotate across teams, inherit services, support incidents,
-or integrate acquired codebases because critical context is fragmented across documentation, source, tribal knowledge, and
-pull request history. Bearing serves new or rotating developers and the enablement teams responsible for getting them
-productive safely. In the GitHub Copilot app, `/onboard-repo` opens a live canvas while a coordinating agent runs two
-least-privilege specialists in parallel. One maps architecture, conventions, and workflow through the semantic index and
-verified files; the other converts recent merged pull requests into step-by-step lessons. Results appear incrementally with
-evidence links, persistent first steps, and focused Ask Copilot actions. The reusable plugin makes onboarding inspectable,
-governed, and available in the developer's existing environment, reducing repeated discovery work while keeping code
-changes and implementation decisions under human control.
+Bearing is a light forward-deployed engineer (FDE) as a service for the field teams that help customers move from AI
+adoption to AI outcomes. The GitHub Copilot App workflow has three steps: walk people through discovery, generate surveys that
+capture fine-grained requirements, and turn confirmed requirements into workshops drawn from a knowledge base of building blocks.
+Only repository discovery is built. `/onboard-repo` runs two read-only, least-privilege agents in parallel and fills a live canvas
+with a cited map, conventions marked documented or observed, workflow, merged-PR lessons, first steps, and explicit unavailable
+sections, then stops before implementation. Stakeholder discovery, surveys, response synthesis, workshop assembly and a private
+Pages workspace per customer are proposed, not built. People review every gate. Effectiveness is a hypothesis to pilot.
 
-**Word count:** 133
+**Word count:** 124
 
 **Narrative:** [Read the customer-facing Bearing narrative](narrative.md).
 
-**Enterprise deck:** [18-slide branded deck](bearing-enterprise-deck.pptx) covering the AI trust gap, Bearing's
-evidence-first workflow, the delegated work and human review gates at each stage, the proposed modernization assessment, and a persona view of how account teams, customer success,
-solution sales, and developer stakeholders could reuse the pattern. Slides marked Prototype are implemented; slides marked
-Emerging reuse today's guide but are not yet validated; slides marked Proposed are not built.
+**Enterprise deck:** [15-slide branded deck](bearing-enterprise-deck.pptx), "Light FDE as a service". It sets out the industry
+signal that customers are moving from AI adoption to AI outcomes (labeled as research, not findings about our customers), an honest
+table of what is and is not known about forward-deployed engineers, the three steps (discovery, generated surveys, workshops from
+the building blocks), an illustrative worked example, the delegation and human review gates, who uses it, what is built versus
+proposed, a bounded pilot, and the research and limits. Slides marked Prototype are implemented (repository discovery only);
+Emerging means a document or design exists but is not validated or automated; Proposed is not built; Illustrative is an invented
+example. Every slide has speaker notes restating built versus proposed and the sources used.
+
+**Evidence:** [Sources, methods and evidence strength](fde-evidence.md). It records what each source does and does not show.
+No rigorous controlled study of forward-deployed engineer effectiveness was found, so Bearing's value is a hypothesis to pilot.
 
 **Modernization assessment concept:** [Project brief](modernization-brief.md) and [branded Word brief](modernization-brief.docx).
 This is a proposed project, not an implemented Bearing capability.
 
 **Workshop knowledge base:** [Reusable building blocks and workshop recipes](workshop-building-blocks.md).
 
+**Customer workspace template (Proposed surface):** [docs/](../docs/index.html) holds a static, unpublished GitHub Pages
+template with one fictional customer page. A privately published Pages site is open to everyone with read access to its
+repository and needs GitHub Enterprise Cloud, so "different customers for different people" means one repository and one
+private site per customer. It is not published, has no access control configured, and runs no workflow.
+
 ## Why an enterprise customer would use it
+
+Customers who have started using AI now ask what it changed and how they will know. That is an industry signal, not a finding
+about our customers (see [fde-evidence.md](fde-evidence.md)). Field teams need a repeatable way to answer without a
+forward-deployed engineer for every account. Bearing is a light forward-deployed engineer: a first pass by Copilot, reviewed by
+people at every gate. It does not replace a real forward-deployed engineer, the service owner, or the workshop facilitator.
 
 | Business need | Bearing response | Customer value |
 |---|---|---|
+| Customers ask for AI outcomes and impact, not just adoption | Light FDE as a service: guided discovery, generated surveys, and workshops from the building blocks. Only repository discovery (`/onboard-repo`) is built; the rest is Proposed. | A path from the outcome question to a customer-confirmed requirement list and an owned workshop action. A hypothesis to pilot; no results are claimed. |
+| Field teams repeat discovery with every customer | `/onboard-repo` is the built discovery step: a read-only, cited exploration of one repository. | A cited picture and visible evidence gaps (Emerging) to turn into discovery questions. |
 | Developers rotate into unfamiliar services | One consistent `/onboard-repo` workflow builds a repository-specific guide. | Less repeated discovery and fewer interruptions for service owners. |
 | Important context is distributed across code, docs, and pull requests | Parallel specialists combine semantic repository context with recent GitHub history. | A faster path from "where is everything?" to an evidence-backed mental model. |
 | Generated guidance can be wrong or over-privileged | Read-only agents cite files, limit tools by role, mark unavailable sections, and stop before implementation. | Reviewable output with bounded actions and an explicit human decision point. |
@@ -47,7 +63,7 @@ This is a proposed project, not an implemented Bearing capability.
 The repository includes the complete reusable unit: plugin manifest, skill, specialist agents, role-scoped tool lists,
 dispatch prompts, deterministic extension tools, local storage, canvas UI, sample data, and tests.
 
-## Workflow transformation: plan, delegate, validate, review, scale
+## Workflow transformation: plan, delegate, validate, review, ship
 
 | Stage | GitHub Copilot App workflow |
 |---|---|
@@ -55,26 +71,34 @@ dispatch prompts, deterministic extension tools, local storage, canvas UI, sampl
 | **Delegate** | The coordinating agent starts two specialist agents in parallel, each with a narrow role and least-privilege tool set. |
 | **Validate** | Specialists verify semantic-search results in repository files; extension tools validate paths and line ranges, and unavailable evidence stays explicit. |
 | **Review** | The live canvas exposes sources and status progressively. The developer can inspect evidence, ask focused questions, reuse or refresh a guide, and decide whether to act. |
-| **Scale** | The plugin packages the workflow, prompts, tools, interface, storage, controls, and measures so another team can install and repeat it. |
+| **Ship** | The first-steps checklist is handed over and Bearing stops before implementation. The plugin packages the workflow, prompts, tools, interface, storage, controls, and measures so another team can install and repeat it. |
 
 This is workflow transformation, not a claim that an agent should replace engineering judgment. It automates the repeated
-discovery and synthesis work around an existing onboarding process, then adds review gates at repository selection,
-evidence inspection, follow-up questioning, and the decision to begin implementation.
+discovery and synthesis work of a first-pass repository exploration (the light FDE pass), then adds review gates at
+repository selection, evidence inspection, follow-up questioning, and the decision to begin implementation.
+
+The same five stages are the design for the proposed light FDE service (Proposed, not built). Its gates: scope approved by the
+account owner, survey approved before sending, requirements confirmed by the customer, workshop plan approved by the
+facilitator, and actions owned by the customer. Only the first stage, repository discovery, is built.
 
 ## Field-ready customer playbook
 
-**Who uses the pattern:** account teams and solution engineers can introduce it; customer success and enablement teams can
-run the pilot; service owners validate the output; developers use the guide.
+**Who uses the pattern:** account teams, solution sales and engineers, customer success, developer stakeholders, and workshop
+facilitators. Only developer repository exploration is built today; the other roles are designs to test in a pilot.
 
-1. Select one small repository whose owner can verify the generated result.
-2. Baseline the current onboarding experience: time spent, people interrupted, sources consulted, and first task attempted.
-3. Install Bearing, run `/onboard-repo`, and review the guide with the service owner rather than presenting it as ground truth.
-4. Capture documentation gaps, policy questions, inaccurate evidence, and unavailable sections as pilot findings.
-5. Agree success measures and enterprise controls before expanding to the next repository cohort.
+1. Select one customer engagement with an outcome question and an account owner who will approve scope.
+2. Baseline the current approach: time to qualified requirements, requirement completeness as judged by the account owner, and how
+   many workshop actions get a named customer owner.
+3. Run `/onboard-repo` on one small repository its owner can verify, and review the guide with that owner rather than presenting
+   it as ground truth.
+4. Draft the survey and choose a workshop recipe by hand from the [building blocks](workshop-building-blocks.md); the automated
+   versions are Proposed. Use evidence gaps as discovery questions.
+5. Capture corrections, unsupported claims, and unavailable sections as pilot findings; agree success measures and enterprise
+   controls before expanding.
 6. Reuse the demo narrative: "Copilot plans the journey, delegates bounded research, validates evidence, and returns control
-   to the developer before any implementation begins."
+   to the person before any next step begins."
 
-This gives field teams a customer-ready conversation about productivity, governance, and adoption rather than a one-off
+This gives field teams a customer-ready conversation about outcomes, governance, and adoption rather than a one-off
 feature demonstration.
 
 ## Governance, security, Responsible AI, and human review
@@ -90,20 +114,29 @@ feature demonstration.
 
 ## Demo video plan
 
-Target duration: **2 minutes 50 seconds**. Recording should show the GitHub Copilot app, the repository session, and the
-Bearing canvas at a readable zoom.
+Target duration: **about 2 minutes 55 seconds** (draft v7 runs 2:54; the limit is three minutes). The video is cut from the
+15-slide enterprise deck and one screen recording of `/onboard-repo`. Only the recording shows built behavior (Prototype);
+the slides label everything else Proposed, Emerging, or Illustrative, and external figures are shown as industry signals, not
+findings about customers. Recording should show the GitHub Copilot app, the repository session, and the Bearing canvas at a
+readable zoom.
 
 | Time | Show | Narration |
 |---|---|---|
-| 0:00-0:20 | Open an unfamiliar service repository and briefly show scattered docs and pull requests. | "When developers rotate teams, inherit a service, or join an incident, critical context is fragmented. Service owners repeat the same explanations, and new contributors lose time rebuilding a mental model." |
-| 0:20-0:35 | Show the two install commands, then type `/onboard-repo`. | "Bearing transforms that existing onboarding process into a repeatable GitHub Copilot App workflow: one install and one consistent command." |
-| 0:35-0:55 | Show the repository scan, immediate canvas open, and two agents starting. | "Copilot plans the journey, then delegates repository mapping and change-history research to two least-privilege, read-only specialists in parallel." |
-| 0:55-1:25 | Move through Welcome, Map, and Architecture while sections populate. Open a file reference. | "The cartographer combines semantic repository context with verified files. Claims link back to evidence; missing facts are marked unavailable rather than invented." |
-| 1:25-1:45 | Show Conventions and Workflow, including documented versus observed evidence. | "Documented rules stay distinct from patterns observed across at least three files. Bearing shows real setup and test commands but never executes them." |
-| 1:45-2:05 | Show Recent changes and a pull request walkthrough. | "The historian adds GitHub-native change context, turning merged pull requests into lessons about why the system evolved." |
-| 2:05-2:25 | Click an Ask Copilot action and show the question arriving in chat. | "This is more than a generated document: every item can open a grounded conversation in the same app and repository session." |
-| 2:25-2:40 | Show First steps and tick one checklist item. | "The developer reviews the result and controls every next action. Bearing stops before implementation." |
-| 2:40-2:50 | End on the architecture slide or completed guide. | "Plan, delegate, validate, review, and scale: reusable skills, specialist agents, GitHub context, governed tools, and interactive canvas make this a customer-copyable Copilot workflow." |
+| 0:00-0:20 | Slides 1-3: title, the industry signals (labeled as signals, not findings about customers), and the feature-tour hypothesis. | "Bearing is light FDE as a service. Customers now ask 'what did it change?', not 'are we using AI?' An industry signal, not a finding about our customers: one survey found 60% of companies report hardly any material value. Our hypothesis: feature tours cannot answer that, and discovery gets repeated." |
+| 0:20-0:38 | Slide 4: what an FDE is and what the evidence says, ending on "Not known". | "A forward-deployed engineer works embedded with a customer. Job postings are surging, by one index, but Gartner forecasts about 70% of vendor-led programs abandoned by 2028, and no controlled or peer-reviewed study of FDE effectiveness was found. A bounded pilot, not proven." |
+| 0:38-0:52 | Slide 5: discover, survey, workshop with Prototype and Proposed tags, and the plan-delegate-validate-review-ship strip. | "Light FDE as a service: discover, survey, workshop. Light means a first pass by Copilot, reviewed by people at every gate. Only discovery is built, as a prototype. Survey and workshop are proposed." |
+| 0:52-1:06 | Recording, stage 1 Plan: one prompt (the same as `/onboard-repo`) loads the skill. Stage tracker, "Prototype: built today" tag, and the Repository selection gate chip. | "Step one, discovery, is the built part: a prototype that explores one repository, read-only, with cited evidence. Plan: one prompt, the same as onboard-repo, scopes the repository and the guide." |
+| 1:06-1:18 | Recording, stage 2 Delegate: the canvas opens and two read-only agents start. Gate chip: read-only tools, no shell, set before work starts. | "Delegate. The coordinating agent hands repository mapping and pull request history to two parallel specialists, each read-only and role-scoped with no shell, limits fixed before work starts." |
+| 1:18-1:35 | Recording, stage 3 Validate: cited architecture, documented versus observed conventions, setup commands shown but never run. Gate chip: service owner inspects the cited files. | "Validate. Tools check every cited path and line range, and invalid references are removed. Documented rules stay distinct from observed patterns. Commands are shown, never run. This validates references, not meaning, so the service owner inspects the cited files." |
+| 1:35-1:46 | Recording, stage 4 Review: the guide fills in live, an Ask action sends a grounded question, and the cited answer arrives. Gate chip: developer questions the evidence. | "Review. The canvas fills in live, so the owner reviews evidence instead of re-explaining the system. Any item becomes a grounded question, answered with citations in the same session." |
+| 1:46-1:56 | Recording, stage 5 Ship: the first-steps checklist and what the guide could not confirm. Gate chip: a person decides whether and what to implement. | "Ship. The guide ends in a first-steps checklist and lists what it could not confirm. It stops before implementation: a person decides whether and what to implement." |
+| 1:56-2:15 | Slides 6-8: built versus proposed discovery, then the survey and the workshop, tagged Proposed or Emerging. | "Built: what does the code say? Proposed: what outcome does the customer want? Step two, a survey drafted from the findings, approved by a person before it is sent. Step three, a workshop plan from the knowledge base, approved by a facilitator. Both are proposed; the blocks are an emerging document." |
+| 2:15-2:25 | Slides 9-10: the worked example (tagged Illustrative, fictional) and the five human gates. | "This worked example is fictional and illustrative: from outcome question to owned action. Five human gates; nothing moves on without a named person saying yes." |
+| 2:25-2:38 | Slides 11-12: who uses it and what is built today, emerging, and proposed. | "Only developer repository exploration is built; account teams, solution sales and customer success are proposed. Workshop blocks and the Pages template are emerging. The built part is read-only, with no shell." |
+| 2:38-2:54 | Slides 13-14: proposed pilot measures, then start with one engagement. | "A bounded pilot, not a promise. Proposed measures: time to qualified requirements, completeness, workshop-to-action conversion and review rework. No results are claimed. Start with one engagement: run the built piece, run the rest by hand." |
+
+The recording shows a natural-language prompt instead of the slash command, so it is captioned "same as /onboard-repo"; the
+repository name and local paths in it are masked.
 
 ### Recording checklist
 
@@ -130,11 +163,11 @@ and GitHub context shown end to end.
 
 | Criterion | Evidence in this submission |
 |---|---|
-| Enterprise relevance and customer value | Enterprise scenarios and value table above; consistent onboarding for team rotation, ownership transfer, incidents, and acquisition integration. |
-| Repeatability and field usability | Two-command installation, one invocation, reusable plugin assets, plan-to-scale workflow, field customer playbook, proposed success measures, demo script. |
+| Enterprise relevance and customer value | Customers moving from AI adoption to AI outcomes (industry signals, labeled), the light FDE service for field teams, and the value table above; consistent onboarding for team rotation, ownership transfer, incidents, and acquisition integration. |
+| Repeatability and field usability | Two-command installation, one invocation, reusable plugin assets, plan-to-ship workflow, light FDE gates for field personas, field customer playbook, proposed pilot measures, a static customer workspace template, demo script. |
 | Governance, security, Responsible AI, human-in-the-loop | Role-scoped tools, read-only behavior, untrusted-data instructions, evidence rules, local storage, loopback token, explicit review and production controls. |
 | Competitive positioning | Implemented multi-agent workflow, semantic repository context, GitHub pull request history, deterministic tools, durable state, and interactive canvas. |
-| Storytelling and demo clarity | Three-slide deck and a timed 2:50 problem-to-value demo script. |
+| Storytelling and demo clarity | 15-slide enterprise deck (Light FDE as a service, with a sourced evidence base) and a timed 2:50 problem-to-value demo script. |
 | Product feedback bonus | Five concrete GitHub Copilot App product recommendations grounded in development experience. |
 
 ## GitHub Copilot App product feedback
@@ -157,6 +190,7 @@ and GitHub context shown end to end.
 - [x] Project summary is no more than 150 words.
 - [x] Competitive-edge paragraph is drafted.
 - [x] Bonus GitHub Copilot App product feedback is drafted.
-- [x] Slide deck is complete: [bearing-hackathon-deck.pptx](bearing-hackathon-deck.pptx).
+- [x] Slide deck is complete: [bearing-enterprise-deck.pptx](bearing-enterprise-deck.pptx).
+- [x] Evidence companion: [fde-evidence.md](fde-evidence.md).
 - [ ] Demo video is recorded, no more than three minutes, and linked here.
 - [ ] External submission is finalised.
