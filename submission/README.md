@@ -114,20 +114,29 @@ feature demonstration.
 
 ## Demo video plan
 
-Target duration: **2 minutes 50 seconds**. Recording should show the GitHub Copilot app, the repository session, and the
-Bearing canvas at a readable zoom.
+Target duration: **about 2 minutes 55 seconds** (draft v7 runs 2:54; the limit is three minutes). The video is cut from the
+15-slide enterprise deck and one screen recording of `/onboard-repo`. Only the recording shows built behavior (Prototype);
+the slides label everything else Proposed, Emerging, or Illustrative, and external figures are shown as industry signals, not
+findings about customers. Recording should show the GitHub Copilot app, the repository session, and the Bearing canvas at a
+readable zoom.
 
 | Time | Show | Narration |
 |---|---|---|
-| 0:00-0:20 | Open an unfamiliar service repository and briefly show scattered docs and pull requests. | "When developers rotate teams, inherit a service, or join an incident, critical context is fragmented. Service owners repeat the same explanations, and new contributors lose time rebuilding a mental model." |
-| 0:20-0:35 | Show the two install commands, then type `/onboard-repo`. | "Bearing transforms that existing onboarding process into a repeatable GitHub Copilot App workflow: one install and one consistent command." |
-| 0:35-0:55 | Show the repository scan, immediate canvas open, and two agents starting. | "Copilot plans the journey, then delegates repository mapping and change-history research to two least-privilege, read-only specialists in parallel." |
-| 0:55-1:25 | Move through Welcome, Map, and Architecture while sections populate. Open a file reference. | "The cartographer combines semantic repository context with verified files. Claims link back to evidence; missing facts are marked unavailable rather than invented." |
-| 1:25-1:45 | Show Conventions and Workflow, including documented versus observed evidence. | "Documented rules stay distinct from patterns observed across at least three files. Bearing shows real setup and test commands but never executes them." |
-| 1:45-2:05 | Show Recent changes and a pull request walkthrough. | "The historian adds GitHub-native change context, turning merged pull requests into lessons about why the system evolved." |
-| 2:05-2:25 | Click an Ask Copilot action and show the question arriving in chat. | "This is more than a generated document: every item can open a grounded conversation in the same app and repository session." |
-| 2:25-2:40 | Show First steps and tick one checklist item. | "The developer reviews the result and controls every next action. Bearing stops before implementation." |
-| 2:40-2:50 | End on the architecture slide or completed guide. | "Plan, delegate, validate, review, and scale: reusable skills, specialist agents, GitHub context, governed tools, and interactive canvas make this a customer-copyable Copilot workflow." |
+| 0:00-0:20 | Slides 1-3: title, the industry signals (labeled as signals, not findings about customers), and the feature-tour hypothesis. | "Bearing is light FDE as a service. Customers now ask 'what did it change?', not 'are we using AI?' An industry signal, not a finding about our customers: one survey found 60% of companies report hardly any material value. Our hypothesis: feature tours cannot answer that, and discovery gets repeated." |
+| 0:20-0:38 | Slide 4: what an FDE is and what the evidence says, ending on "Not known". | "A forward-deployed engineer works embedded with a customer. Job postings are surging, by one index, but Gartner forecasts about 70% of vendor-led programs abandoned by 2028, and no controlled or peer-reviewed study of FDE effectiveness was found. A bounded pilot, not proven." |
+| 0:38-0:52 | Slide 5: discover, survey, workshop with Prototype and Proposed tags, and the plan-delegate-validate-review-ship strip. | "Light FDE as a service: discover, survey, workshop. Light means a first pass by Copilot, reviewed by people at every gate. Only discovery is built, as a prototype. Survey and workshop are proposed." |
+| 0:52-1:06 | Recording, stage 1 Plan: one prompt (the same as `/onboard-repo`) loads the skill. Stage tracker, "Prototype: built today" tag, and the Repository selection gate chip. | "Step one, discovery, is the built part: a prototype that explores one repository, read-only, with cited evidence. Plan: one prompt, the same as onboard-repo, scopes the repository and the guide." |
+| 1:06-1:18 | Recording, stage 2 Delegate: the canvas opens and two read-only agents start. Gate chip: read-only tools, no shell, set before work starts. | "Delegate. The coordinating agent hands repository mapping and pull request history to two parallel specialists, each read-only and role-scoped with no shell, limits fixed before work starts." |
+| 1:18-1:35 | Recording, stage 3 Validate: cited architecture, documented versus observed conventions, setup commands shown but never run. Gate chip: service owner inspects the cited files. | "Validate. Tools check every cited path and line range, and invalid references are removed. Documented rules stay distinct from observed patterns. Commands are shown, never run. This validates references, not meaning, so the service owner inspects the cited files." |
+| 1:35-1:46 | Recording, stage 4 Review: the guide fills in live, an Ask action sends a grounded question, and the cited answer arrives. Gate chip: developer questions the evidence. | "Review. The canvas fills in live, so the owner reviews evidence instead of re-explaining the system. Any item becomes a grounded question, answered with citations in the same session." |
+| 1:46-1:56 | Recording, stage 5 Ship: the first-steps checklist and what the guide could not confirm. Gate chip: a person decides whether and what to implement. | "Ship. The guide ends in a first-steps checklist and lists what it could not confirm. It stops before implementation: a person decides whether and what to implement." |
+| 1:56-2:15 | Slides 6-8: built versus proposed discovery, then the survey and the workshop, tagged Proposed or Emerging. | "Built: what does the code say? Proposed: what outcome does the customer want? Step two, a survey drafted from the findings, approved by a person before it is sent. Step three, a workshop plan from the knowledge base, approved by a facilitator. Both are proposed; the blocks are an emerging document." |
+| 2:15-2:25 | Slides 9-10: the worked example (tagged Illustrative, fictional) and the five human gates. | "This worked example is fictional and illustrative: from outcome question to owned action. Five human gates; nothing moves on without a named person saying yes." |
+| 2:25-2:38 | Slides 11-12: who uses it and what is built today, emerging, and proposed. | "Only developer repository exploration is built; account teams, solution sales and customer success are proposed. Workshop blocks and the Pages template are emerging. The built part is read-only, with no shell." |
+| 2:38-2:54 | Slides 13-14: proposed pilot measures, then start with one engagement. | "A bounded pilot, not a promise. Proposed measures: time to qualified requirements, completeness, workshop-to-action conversion and review rework. No results are claimed. Start with one engagement: run the built piece, run the rest by hand." |
+
+The recording shows a natural-language prompt instead of the slash command, so it is captioned "same as /onboard-repo"; the
+repository name and local paths in it are masked.
 
 ### Recording checklist
 
